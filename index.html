@@ -96,6 +96,13 @@
       background: rgba(255, 255, 255, 0.05);
       border-radius: 50%;
     }
+    .sf-header__logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: var(--space-md);
+      filter: brightness(0) invert(1);
+      opacity: 0.95;
+    }
     .sf-header__title {
       font-size: var(--font-size-2xl);
       font-weight: 700;
@@ -796,6 +803,7 @@
         <button class="sf-lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
         <button class="sf-lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
       </div>
+      <img src="img/logo.png" alt="Shine Music School" class="sf-header__logo">
       <div class="sf-header__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
       <div class="sf-header__subtitle" data-en="Update your schedule gaps and general availability" data-es="Actualiza tus huecos de horario y disponibilidad general">Actualiza tus huecos de horario y disponibilidad general</div>
     </div>
