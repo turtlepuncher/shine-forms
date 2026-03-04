@@ -1,0 +1,206 @@
+{
+  "id": "practice-room-booking",
+  "logo": "img/logo.png",
+  "title": { "en": "Music Practice Room", "es": "Sala de Ensayo" },
+  "subtitle": { "en": "Reserve a room at Shine Music School", "es": "Reserva una sala en Estudio Shine" },
+  "submit_label": { "en": "Pay & Confirm Booking", "es": "Pagar y confirmar reserva" },
+
+  "sections": [
+    {
+      "id": "pricing-info",
+      "info": {
+        "en": "<strong>Room rental: 9€/hour</strong> for 1 participant.<br>After 17h: +4€/hour surcharge. Sundays: +25€ opening fee.<br>Extra participants: +1€/person/hour.<br><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Terms & Conditions</a>",
+        "es": "<strong>Alquiler de sala: 9€/hora</strong> para 1 participante.<br>Después de las 17h: +4€/hora de recargo. Domingos: +25€ de apertura.<br>Participantes adicionales: +1€/persona/hora.<br><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Términos y condiciones</a>"
+      },
+      "fields": []
+    },
+    {
+      "id": "booking",
+      "title": { "en": "Booking Details", "es": "Detalles de la reserva" },
+      "layout": "grid-2col",
+      "fields": [
+        {
+          "id": "date",
+          "type": "date",
+          "label": { "en": "Date", "es": "Fecha" },
+          "required": true,
+          "min_date": "today"
+        },
+        {
+          "id": "start_time",
+          "type": "dropdown",
+          "label": { "en": "Starting from", "es": "Hora de inicio" },
+          "placeholder": { "en": "Select a time", "es": "Selecciona una hora" },
+          "options": [
+            { "value": "10H", "label": "10:00" },
+            { "value": "11H", "label": "11:00" },
+            { "value": "12H", "label": "12:00" },
+            { "value": "13H", "label": "13:00" },
+            { "value": "14H", "label": "14:00" },
+            { "value": "15H", "label": "15:00" },
+            { "value": "16H", "label": "16:00" },
+            { "value": "17H", "label": "17:00" },
+            { "value": "18H", "label": "18:00" },
+            { "value": "19H", "label": "19:00" },
+            { "value": "20H", "label": "20:00" }
+          ],
+          "required": true
+        },
+        {
+          "id": "participants",
+          "type": "dropdown",
+          "label": { "en": "Participants", "es": "Participantes" },
+          "placeholder": { "en": "How many people?", "es": "¿Cuántas personas?" },
+          "options": [
+            { "value": "1", "label": "1" },
+            { "value": "2", "label": "2" },
+            { "value": "3", "label": "3" },
+            { "value": "4", "label": "4" },
+            { "value": "5", "label": "5" },
+            { "value": "6", "label": "6" },
+            { "value": "7", "label": "7" },
+            { "value": "8", "label": "8" },
+            { "value": "9", "label": "9" },
+            { "value": "10", "label": "10" },
+            { "value": "11", "label": "11" },
+            { "value": "12", "label": "12" }
+          ],
+          "required": true
+        },
+        {
+          "id": "duration",
+          "type": "dropdown",
+          "label": { "en": "Duration", "es": "Duración" },
+          "placeholder": { "en": "Select duration", "es": "Selecciona la duración" },
+          "options_dynamic": {
+            "source": "start_time",
+            "rule": "duration_from_start"
+          },
+          "required": true,
+          "disabled_until": "start_time"
+        }
+      ]
+    },
+    {
+      "id": "instruments-toggle",
+      "fields": [
+        {
+          "id": "needs_instruments",
+          "type": "radio-pills",
+          "label": { "en": "Do you need musical instruments or accessories?", "es": "¿Necesitas instrumentos musicales o accesorios?" },
+          "options": [
+            { "value": "yes", "label": { "en": "YES", "es": "SÍ" } },
+            { "value": "no", "label": "NO" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "title": { "en": "Instruments & Accessories", "es": "Instrumentos y accesorios" },
+      "show_if": { "field": "needs_instruments", "equals": "yes" },
+      "catalog": [
+        { "id": "acoustic_piano", "name": { "en": "Acoustic Piano", "es": "Piano acústico" }, "price": 3, "max_qty": 1, "image": "img/acoustic-piano.jpg" },
+        { "id": "digital_piano", "name": { "en": "Digital Piano", "es": "Piano digital" }, "price": 2, "max_qty": 2, "image": "img/digital-piano.jpg" },
+        { "id": "keyboard", "name": { "en": "Keyboard (88 keys)", "es": "Teclado (88 teclas)" }, "price": 1, "max_qty": 3, "image": "img/keyboard.jpg" },
+        { "id": "nord_keyboard", "name": "Nord Stage 4", "price": 8, "max_qty": 1, "image": "img/nord-keyboard.jpg" },
+        { "id": "drums", "name": { "en": "Drums", "es": "Batería" }, "price": 2, "max_qty": 2, "image": "img/drums.jpg" },
+        { "id": "microphone", "name": { "en": "Microphone & Acc.", "es": "Micrófono y acc." }, "price": 2, "max_qty": 12, "image": "img/microphone.jpg" },
+        { "id": "mixing_board", "name": { "en": "Mixing Board", "es": "Mesa de mezclas" }, "price": 2, "max_qty": 2, "image": "img/mixing-board.jpg" },
+        { "id": "speakers", "name": { "en": "Speakers", "es": "Altavoces" }, "price": 2, "max_qty": 2, "image": "img/speakers.jpg" },
+        { "id": "electric_guitar", "name": { "en": "Electric Guitar & Acc.", "es": "Guitarra eléctrica y acc." }, "price": 2, "max_qty": 3, "image": "img/electric-guitar.png" },
+        { "id": "bass_guitar", "name": { "en": "Bass Guitar & Acc.", "es": "Bajo eléctrico y acc." }, "price": 2, "max_qty": 3, "image": "img/bass-guitar.png" },
+        { "id": "amp", "name": { "en": "Amp", "es": "Amplificador" }, "price": 1, "max_qty": 4, "image": "img/amp.jpg" },
+        { "id": "acoustic_guitar", "name": { "en": "Acoustic Guitar", "es": "Guitarra acústica" }, "price": 1, "max_qty": 5, "image": "img/acoustic-guitar.jpg" },
+        { "id": "classical_guitar", "name": { "en": "Classical Guitar", "es": "Guitarra clásica" }, "price": 1, "max_qty": 5, "image": "img/classical-guitar.png" },
+        { "id": "dj_set", "name": "Pioneer RX DJ Set", "price": 12, "max_qty": 1, "image": "img/dj-set.jpg" },
+        { "id": "double_bass", "name": { "en": "Double Bass", "es": "Contrabajo" }, "price": 2, "max_qty": 3, "image": "img/double-bass.jpg" },
+        { "id": "saxophone", "name": { "en": "Saxophone", "es": "Saxofón" }, "price": 2, "max_qty": 3, "image": "img/saxophone.jpg" }
+      ],
+      "fields": []
+    },
+    {
+      "id": "comments",
+      "fields": [
+        {
+          "id": "additional_requests",
+          "type": "textarea",
+          "label": { "en": "Additional requests and comments", "es": "Solicitudes y comentarios adicionales" },
+          "placeholder": { "en": "Any special requirements?", "es": "¿Algún requisito especial?" },
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": { "en": "Your Details", "es": "Tus datos" },
+      "fields": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": { "en": "Full Name", "es": "Nombre completo" },
+          "placeholder": { "en": "First and last name", "es": "Nombre y apellidos" },
+          "required": true
+        },
+        {
+          "id": "phone",
+          "type": "phone",
+          "label": { "en": "Phone", "es": "Teléfono" },
+          "placeholder": "+34...",
+          "required": true
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "placeholder": "you@example.com",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "fields": [
+        {
+          "id": "accept_terms",
+          "type": "checkbox",
+          "label": {
+            "en": "I accept the <a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Terms & Conditions</a>",
+            "es": "Acepto los <a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>términos y condiciones</a>"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+
+  "calculations": {
+    "room_base": 9,
+    "surcharge_after_17": 4,
+    "sunday_tariff": 25,
+    "extra_person_rate": 1,
+    "instruments": [
+      { "id": "acoustic_piano", "name": { "en": "Acoustic Piano", "es": "Piano acústico" }, "price": 3 },
+      { "id": "digital_piano", "name": { "en": "Digital Piano", "es": "Piano digital" }, "price": 2 },
+      { "id": "keyboard", "name": { "en": "Keyboard", "es": "Teclado" }, "price": 1 },
+      { "id": "nord_keyboard", "name": "Nord Stage 4", "price": 8 },
+      { "id": "drums", "name": { "en": "Drums", "es": "Batería" }, "price": 2 },
+      { "id": "microphone", "name": { "en": "Microphone", "es": "Micrófono" }, "price": 2 },
+      { "id": "mixing_board", "name": { "en": "Mixing Board", "es": "Mesa de mezclas" }, "price": 2 },
+      { "id": "speakers", "name": { "en": "Speakers", "es": "Altavoces" }, "price": 2 },
+      { "id": "electric_guitar", "name": { "en": "Electric Guitar", "es": "Guitarra eléctrica" }, "price": 2 },
+      { "id": "bass_guitar", "name": { "en": "Bass Guitar", "es": "Bajo eléctrico" }, "price": 2 },
+      { "id": "amp", "name": { "en": "Amp", "es": "Amplificador" }, "price": 1 },
+      { "id": "acoustic_guitar", "name": { "en": "Acoustic Guitar", "es": "Guitarra acústica" }, "price": 1 },
+      { "id": "classical_guitar", "name": { "en": "Classical Guitar", "es": "Guitarra clásica" }, "price": 1 },
+      { "id": "dj_set", "name": "Pioneer RX DJ Set", "price": 12 },
+      { "id": "double_bass", "name": { "en": "Double Bass", "es": "Contrabajo" }, "price": 2 },
+      { "id": "saxophone", "name": { "en": "Saxophone", "es": "Saxofón" }, "price": 2 }
+    ]
+  },
+
+  "payment": {
+    "provider": "stripe",
+    "currency": "EUR"
+  }
+}

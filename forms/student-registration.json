@@ -1,0 +1,283 @@
+{
+  "id": "student-registration",
+  "logo": "img/logo.png",
+  "title": { "en": "Student Registration", "es": "Inscripción de Alumno" },
+  "subtitle": { "en": "Start your musical journey with Shine", "es": "Comienza tu camino musical con Shine" },
+  "submit_label": { "en": "Register & Pay", "es": "Inscribirse y pagar" },
+
+  "sections": [
+    {
+      "id": "student-info",
+      "title": { "en": "Student Information", "es": "Información del alumno" },
+      "fields": [
+        {
+          "id": "student_name",
+          "type": "text",
+          "label": { "en": "Student Name", "es": "Nombre del alumno" },
+          "placeholder": { "en": "First and last name", "es": "Nombre y apellidos" },
+          "required": true
+        },
+        {
+          "id": "student_type",
+          "type": "radio-pills",
+          "label": { "en": "Student Type", "es": "Tipo de alumno" },
+          "options": [
+            { "value": "adult", "label": { "en": "Adult", "es": "Adulto" } },
+            { "value": "child", "label": { "en": "Child", "es": "Niño/a" } }
+          ],
+          "required": true
+        },
+        {
+          "id": "student_birthday",
+          "type": "date",
+          "label": { "en": "Student Birthday", "es": "Fecha de nacimiento" },
+          "show_if": { "field": "student_type", "equals": "child" }
+        },
+        {
+          "id": "parent_guardian",
+          "type": "text",
+          "label": { "en": "Parent / Guardian", "es": "Padre / Tutor" },
+          "placeholder": { "en": "Full name", "es": "Nombre completo" },
+          "required": true,
+          "show_if": { "field": "student_type", "equals": "child" }
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": { "en": "Contact Details", "es": "Datos de contacto" },
+      "layout": "grid-2col",
+      "fields": [
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "placeholder": "you@example.com",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "type": "phone",
+          "label": { "en": "Phone", "es": "Teléfono" },
+          "placeholder": "+34...",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "course",
+      "title": { "en": "Course Selection", "es": "Selección de curso" },
+      "fields": [
+        {
+          "id": "instrument",
+          "type": "dropdown",
+          "label": { "en": "Instrument or subject", "es": "Instrumento o asignatura" },
+          "placeholder": { "en": "Choose an instrument", "es": "Elige un instrumento" },
+          "description": { "en": "If you'd like more than one, choose one here and leave a note below.", "es": "Si deseas más de uno, elige uno aquí y déjanos una nota abajo." },
+          "options": [
+            { "value": "guitar", "label": { "en": "Guitar", "es": "Guitarra" } },
+            { "value": "electric_guitar", "label": { "en": "Electric Guitar", "es": "Guitarra eléctrica" } },
+            { "value": "piano", "label": "Piano" },
+            { "value": "singing", "label": { "en": "Singing / Voice", "es": "Canto / Voz" } },
+            { "value": "ukulele", "label": "Ukulele" },
+            { "value": "drums", "label": { "en": "Drums", "es": "Batería" } },
+            { "value": "bass_guitar", "label": { "en": "Bass Guitar", "es": "Bajo eléctrico" } },
+            { "value": "double_bass", "label": { "en": "Double Bass", "es": "Contrabajo" } },
+            { "value": "violin", "label": { "en": "Violin", "es": "Violín" } },
+            { "value": "cello", "label": { "en": "Violoncello", "es": "Violonchelo" } },
+            { "value": "viola", "label": "Viola" },
+            { "value": "saxophone", "label": { "en": "Saxophone", "es": "Saxofón" } },
+            { "value": "clarinet", "label": { "en": "Clarinet", "es": "Clarinete" } },
+            { "value": "flute", "label": { "en": "Concert Flute", "es": "Flauta travesera" } },
+            { "value": "trumpet", "label": { "en": "Trumpet", "es": "Trompeta" } },
+            { "value": "accordion", "label": { "en": "Accordion", "es": "Acordeón" } },
+            { "value": "trombone", "label": { "en": "Trombone", "es": "Trombón" } },
+            { "value": "tuba", "label": "Tuba" },
+            { "value": "harmonica", "label": { "en": "Harmonica", "es": "Armónica" } },
+            { "value": "keyboard", "label": { "en": "Keyboard", "es": "Teclado" } },
+            { "value": "latin_percussion", "label": { "en": "Latin Percussion", "es": "Percusión latina" } },
+            { "value": "cajon", "label": { "en": "Cajón", "es": "Cajón" } },
+            { "value": "recorder", "label": { "en": "Recorder", "es": "Flauta dulce" } },
+            { "value": "kids_music", "label": { "en": "Kid's Music Awareness", "es": "Despertar musical infantil" } },
+            { "value": "theory", "label": { "en": "Music Theory & Harmony", "es": "Teoría musical y armonía" } },
+            { "value": "production", "label": { "en": "Music Production & Composition", "es": "Producción musical y composición" } },
+            { "value": "therapy", "label": { "en": "Music Therapy Sessions", "es": "Sesiones de musicoterapia" } }
+          ],
+          "required": true
+        },
+        {
+          "id": "course_package",
+          "type": "dropdown",
+          "label": { "en": "Course", "es": "Curso" },
+          "placeholder": { "en": "Choose a course package", "es": "Elige un paquete de curso" },
+          "description": { "en": "Recurring debit order prices. Other payment forms: +7€ supplement.", "es": "Precios con domiciliación. Otras formas de pago: +7€ de suplemento." },
+          "options": [
+            { "value": "4h_month", "label": { "en": "4 hours/month — 128€ (Recommended)", "es": "4 horas/mes — 128€ (Recomendado)" } },
+            { "value": "2h_month", "label": { "en": "2 hours/month — 73€", "es": "2 horas/mes — 73€" } },
+            { "value": "3h_month", "label": { "en": "3 hours/month — 103€", "es": "3 horas/mes — 103€" } },
+            { "value": "6h_month", "label": { "en": "6 hours/month — 176€", "es": "6 horas/mes — 176€" } },
+            { "value": "8h_month", "label": { "en": "8 hours/month — 224€", "es": "8 horas/mes — 224€" } },
+            { "value": "9h_month", "label": { "en": "9 hours/month — 248€", "es": "9 horas/mes — 248€" } },
+            { "value": "12h_month", "label": { "en": "12 hours/month — 320€", "es": "12 horas/mes — 320€" } },
+            { "value": "3h_week", "label": { "en": "3 hours/week — 110€", "es": "3 horas/semana — 110€" } },
+            { "value": "4.5h_week", "label": { "en": "4.5 hours/week — 147€", "es": "4,5 horas/semana — 147€" } },
+            { "value": "5h_week", "label": { "en": "5 hours/week — 159€", "es": "5 horas/semana — 159€" } },
+            { "value": "6h_week", "label": { "en": "6 hours/week — 183€", "es": "6 horas/semana — 183€" } },
+            { "value": "10h_week", "label": { "en": "10 hours/week — 279€", "es": "10 horas/semana — 279€" } },
+            { "value": "pack_8", "label": "PACK 8h — 268€" },
+            { "value": "pack_16", "label": "PACK 16h — 458€" },
+            { "value": "pack_24", "label": "PACK 24h — 658€" },
+            { "value": "pack_32", "label": "PACK 32h — 848€" },
+            { "value": "group", "label": { "en": "Group Classes — 52€", "es": "Clases grupales — 52€" } },
+            { "value": "private_group", "label": { "en": "Private Group Lessons — 75€", "es": "Clases privadas en grupo — 75€" } },
+            { "value": "pack_private_group", "label": { "en": "PACK Private Group Lessons — 276€", "es": "PACK Clases privadas en grupo — 276€" } },
+            { "value": "combo_student", "label": { "en": "Combos (students) — 29€", "es": "Combos (alumnos) — 29€" } },
+            { "value": "combo_non_student", "label": { "en": "Combos (non-students) — 38€", "es": "Combos (no alumnos) — 38€" } },
+            { "value": "intensive_90", "label": { "en": "Once-off 90 min Intensive — 75€", "es": "Clase intensiva 90 min — 75€" } },
+            { "value": "trial", "label": { "en": "Trial Class — 29€", "es": "Clase de prueba — 29€" } },
+            { "value": "other", "label": { "en": "Other — specify below", "es": "Otro — especificar abajo" } }
+          ],
+          "required": true
+        },
+        {
+          "id": "lesson_type",
+          "type": "radio-pills",
+          "label": { "en": "Lesson Type", "es": "Tipo de clase" },
+          "options": [
+            { "value": "in_person", "label": { "en": "In-Person", "es": "Presencial" } },
+            { "value": "online", "label": "Online" }
+          ],
+          "required": true
+        },
+        {
+          "id": "availability",
+          "type": "textarea",
+          "label": { "en": "Availability", "es": "Disponibilidad" },
+          "placeholder": { "en": "Please list several options so we can match you with the perfect teacher.", "es": "Por favor indica varias opciones para poder asignarte el profesor perfecto." },
+          "rows": 3,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "extras",
+      "fields": [
+        {
+          "id": "musical_style",
+          "type": "text",
+          "label": { "en": "Preferred Musical Style", "es": "Estilo musical preferido" },
+          "placeholder": { "en": "Rock, jazz, classical, pop...", "es": "Rock, jazz, clásica, pop..." }
+        },
+        {
+          "id": "comments",
+          "type": "textarea",
+          "label": { "en": "Additional comments & requests", "es": "Comentarios y solicitudes adicionales" },
+          "placeholder": { "en": "Anything else we should know?", "es": "¿Algo más que debamos saber?" },
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "id": "payment-info",
+      "title": { "en": "Registration Fee", "es": "Cuota de inscripción" },
+      "info": {
+        "en": "<strong>Registration fee: 35€</strong><br>This one-time fee secures your place at Shine Music School.",
+        "es": "<strong>Cuota de inscripción: 35€</strong><br>Esta cuota única asegura tu plaza en Estudio Shine."
+      },
+      "fields": [
+        {
+          "id": "payment_method",
+          "type": "radio-pills",
+          "label": { "en": "Payment Method", "es": "Método de pago" },
+          "options": [
+            { "value": "card", "label": { "en": "Card (Stripe)", "es": "Tarjeta (Stripe)" } },
+            { "value": "transfer", "label": { "en": "Bank Transfer", "es": "Transferencia" } },
+            { "value": "bizum", "label": "Bizum" }
+          ],
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "bank-info",
+      "show_if": { "field": "payment_method", "equals": "transfer" },
+      "info": {
+        "en": "<strong>Bank Transfer Details:</strong><br>Account Holder: <strong>ESTUDIO SHINE SL</strong><br>Bank: <strong>Sabadell Atlántico</strong><br>IBAN: <strong>ES34 0081 0105 1500 0161 5965</strong><br>BIC/SWIFT: <strong>BSAB ESBB</strong><br><br>Send proof of payment to: <strong>info@shinemusicschool.es</strong>",
+        "es": "<strong>Datos para transferencia:</strong><br>Titular: <strong>ESTUDIO SHINE SL</strong><br>Banco: <strong>Sabadell Atlántico</strong><br>IBAN: <strong>ES34 0081 0105 1500 0161 5965</strong><br>BIC/SWIFT: <strong>BSAB ESBB</strong><br><br>Envía el justificante a: <strong>info@shinemusicschool.es</strong>"
+      },
+      "fields": []
+    },
+    {
+      "id": "bizum-info",
+      "show_if": { "field": "payment_method", "equals": "bizum" },
+      "info": {
+        "en": "<strong>Bizum:</strong> Send payment to<br><span style='font-size:1.5em;font-weight:700'>+34 68 68 35 250</span>",
+        "es": "<strong>Bizum:</strong> Envía el pago al<br><span style='font-size:1.5em;font-weight:700'>+34 68 68 35 250</span>"
+      },
+      "fields": []
+    },
+    {
+      "id": "billing",
+      "title": { "en": "Billing Information", "es": "Datos de facturación" },
+      "fields": [
+        {
+          "id": "billing_name",
+          "type": "text",
+          "label": { "en": "Full Name", "es": "Nombre completo" },
+          "placeholder": { "en": "Account holder name", "es": "Nombre del titular" },
+          "required": true
+        },
+        {
+          "id": "billing_address",
+          "type": "text",
+          "label": { "en": "Street Address", "es": "Dirección" },
+          "placeholder": { "en": "Street and number", "es": "Calle y número" },
+          "required": true
+        },
+        {
+          "id": "billing_city_zip",
+          "type": "text",
+          "label": { "en": "City & Postal Code", "es": "Ciudad y código postal" },
+          "placeholder": { "en": "Barcelona, 08001", "es": "Barcelona, 08001" },
+          "required": true
+        },
+        {
+          "id": "id_number",
+          "type": "text",
+          "label": { "en": "ID / Passport Number", "es": "DNI / NIE / Pasaporte" },
+          "placeholder": { "en": "ID number, DNI, NIE or Passport", "es": "Número de DNI, NIE o pasaporte" },
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "fields": [
+        {
+          "id": "accept_terms",
+          "type": "checkbox",
+          "label": {
+            "en": "I agree to the <a href='https://www.shinemusicschool.es/terms/' target='_blank'>Terms & Conditions</a>",
+            "es": "Acepto los <a href='https://www.shinemusicschool.es/terms/' target='_blank'>términos y condiciones</a>"
+          },
+          "required": true
+        },
+        {
+          "id": "accept_privacy",
+          "type": "checkbox",
+          "label": {
+            "en": "I have read and accept the <a href='https://www.shinemusicschool.es/privacy' target='_blank'>Privacy Policy</a>",
+            "es": "He leído y acepto la <a href='https://www.shinemusicschool.es/privacy' target='_blank'>política de privacidad</a>"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+
+  "payment": {
+    "provider": "stripe",
+    "currency": "EUR",
+    "fixed_amount": 35
+  }
+}

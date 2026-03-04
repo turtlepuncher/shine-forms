@@ -1,0 +1,86 @@
+/* Shine Forms — Brand Theme Variables */
+
+:root {
+  /* Brand palette */
+  --shine-dark-teal: #03444A;
+  --shine-teal: #00A8A8;
+  --shine-mid-teal: #55BFC7;
+  --shine-light-teal: #9AD3DA;
+  --shine-orange: #FF924D;
+  --shine-deep-orange: #E66414;
+  --shine-white: #FFFFFF;
+  --shine-grey: #CCCCCC;
+  --shine-secondary-grey: #666666;
+
+  /* Warm / wood tones */
+  --shine-wood-dark: #5C3D2E;
+  --shine-wood: #8B6914;
+  --shine-sienna: #A0522D;
+  --shine-tan: #D2B48C;
+  --shine-cream: #FFF8F0;
+  --shine-warm-bg: #FAF6F1;
+
+  /* Functional colors */
+  --shine-green: #66BB6A;
+  --shine-green-bg: #E8F5E9;
+  --shine-red: #C62828;
+  --shine-red-bg: #FFEBEE;
+
+  /* Surfaces */
+  --sf-bg: #F4F8F8;
+  --sf-card: #FFFFFF;
+  --sf-card-hover: #F8FAFA;
+  --sf-border: #D8E2E3;
+  --sf-border-focus: var(--shine-teal);
+
+  /* Text */
+  --tx-primary: var(--shine-dark-teal);
+  --tx-secondary: var(--shine-secondary-grey);
+  --tx-placeholder: #A0A8AB;
+  --tx-inverse: var(--shine-white);
+  --tx-error: var(--shine-red);
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Borders */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(3, 68, 74, 0.08);
+  --shadow-md: 0 4px 12px rgba(3, 68, 74, 0.1);
+  --shadow-lg: 0 8px 24px rgba(3, 68, 74, 0.12);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Form layout */
+  --form-max-width: 720px;
+  --form-padding: var(--space-lg);
+}
+
+/* Dark mode (future) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Can override variables here later */
+  }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shine Forms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/shine-forms.css">
+</head>
+<body>
+  <div id="shine-form-root"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/conditions.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/shine-forms.js"></script>
+  <script>
+    // Load form definition and boot the renderer
+    (async function () {
+      const params = new URLSearchParams(window.location.search);
+      const formId = params.get('form') || 'practice-room-booking';
+      try {
+        const resp = await fetch(`../forms/${formId}.json`);
+        if (!resp.ok) throw new Error(`Form "${formId}" not found`);
+        const formDef = await resp.json();
+        window.shineForm = new ShineForm('shine-form-root', formDef);
+      } catch (err) {
+        document.getElementById('shine-form-root').innerHTML =
+          `<div class="sf-form"><div class="sf-section" style="text-align:center; color:var(--tx-error);">
+            <p>Could not load form: ${err.message}</p>
+          </div></div>`;
+      }
+    })();
+  </script>
+</body>
+</html>
