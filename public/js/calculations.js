@@ -28,6 +28,8 @@ const ShineCalc = (() => {
     // Date context
     const dateVal = getVal('date');
     const isSunday = ctx.is_sunday !== undefined ? ctx.is_sunday : _isSunday(dateVal);
+    const isSameDay = ctx.is_same_day !== undefined ? ctx.is_same_day : _isToday(dateVal);
+    const sameDaySurcharge = Number(calcDef.same_day_surcharge) || 0;
 
     // Room rate
     const baseRate = Number(calcDef.room_base) || 0;
@@ -85,6 +87,17 @@ const ShineCalc = (() => {
       total += sundayTariff;
     }
 
+    // Same-day booking surcharge
+    if (isSameDay && duration > 0 && sameDaySurcharge > 0) {
+      const sameTotal = sameDaySurcharge * duration;
+      breakdown.push({
+        label: { en: 'Same-day booking', es: 'Reserva mismo día' },
+        detail: `+${sameDaySurcharge}€/h × ${duration}h`,
+        amount: sameTotal
+      });
+      total += sameTotal;
+    }
+
     // Instrument rentals (from catalog items)
     const instruments = calcDef.instruments || [];
     let instrTotal = 0;
@@ -109,6 +122,15 @@ const ShineCalc = (() => {
     if (!dateStr) return false;
     const d = new Date(dateStr);
     return d.getDay() === 0;
+  }
+
+  function _isToday(dateStr) {
+    if (!dateStr) return false;
+    const today = new Date();
+    const d = new Date(dateStr);
+    return d.getFullYear() === today.getFullYear()
+      && d.getMonth() === today.getMonth()
+      && d.getDate() === today.getDate();
   }
 
   return { evaluate };

@@ -165,8 +165,8 @@
           "id": "accept_terms",
           "type": "checkbox",
           "label": {
-            "en": "I accept the <a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Terms & Conditions</a>",
-            "es": "Acepto los <a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>términos y condiciones</a>"
+            "en": "Client pays at reception (cash, card, or Stripe)",
+            "es": "El cliente paga en recepción (efectivo, tarjeta o Stripe)"
           },
           "required": true
         }
@@ -178,6 +178,7 @@
     "room_base": 9,
     "surcharge_after_17": 4,
     "sunday_tariff": 25,
+    "same_day_surcharge": 1,
     "extra_person_rate": 1,
     "instruments": [
       { "id": "acoustic_piano", "name": { "en": "Acoustic Piano", "es": "Piano acústico" }, "price": 3 },
