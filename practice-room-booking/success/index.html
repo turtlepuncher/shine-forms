@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmed — Shine Music School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../public/css/theme.css">
+  <link rel="stylesheet" href="../../public/css/shine-forms.css">
+  <style>
+    .sf-success {
+      text-align: center;
+      padding: var(--space-xl) var(--space-lg);
+    }
+    .sf-success__icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--space-lg);
+      background: #e8f5e9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .sf-success h2 {
+      font-size: 1.5rem;
+      color: var(--tx-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .sf-success p {
+      color: var(--tx-secondary);
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .sf-success__back {
+      display: inline-block;
+      margin-top: var(--space-xl);
+      padding: 12px 32px;
+      background: var(--bg-primary);
+      color: #fff;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .sf-success__back:hover {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <div class="sf-form">
+    <div class="sf-header">
+      <img class="sf-header__logo" src="../../public/img/logo.png" alt="Shine">
+      <h1 class="sf-header__title" id="title">Booking Confirmed!</h1>
+      <p class="sf-header__subtitle" id="subtitle">Reserve a room at Shine Music School</p>
+    </div>
+    <div class="sf-section sf-success">
+      <div class="sf-success__icon">&#10003;</div>
+      <h2 id="heading">Payment received</h2>
+      <p id="message">Your practice room is booked. You'll receive a confirmation email shortly. See you at the studio!</p>
+      <a href="../" class="sf-success__back" id="back-link">Book another room</a>
+    </div>
+  </div>
+
+  <script>
+    // Simple language detection from browser
+    var lang = (navigator.language || '').startsWith('es') ? 'es' : 'en';
+    if (lang === 'es') {
+      document.getElementById('title').textContent = 'Reserva confirmada!';
+      document.getElementById('subtitle').textContent = 'Reserva una sala en Estudio Shine';
+      document.getElementById('heading').textContent = 'Pago recibido';
+      document.getElementById('message').textContent = 'Tu sala de ensayo está reservada. Recibirás un email de confirmación en breve. ¡Nos vemos en el estudio!';
+      document.getElementById('back-link').textContent = 'Reservar otra sala';
+    }
+  </script>
+</body>
+</html>

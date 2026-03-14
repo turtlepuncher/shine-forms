@@ -796,22 +796,77 @@ class ShineForm {
       return;
     }
 
-    // Collect submission data
-    const data = {
-      form_id: this.def.id,
-      values: { ...this.values },
-      total: this.values['_total'] || 0,
-      breakdown: this.values['_breakdown'] || [],
-      language: ShineI18n.lang(),
-      submitted_at: new Date().toISOString(),
+    // Check if this form has a Stripe checkout endpoint
+    const checkoutEndpoint = this.def.payment && this.def.payment.checkout_endpoint;
+
+    if (checkoutEndpoint) {
+      this._handleStripeCheckout(checkoutEndpoint);
+    } else {
+      // Default: collect and log
+      const data = {
+        form_id: this.def.id,
+        values: { ...this.values },
+        total: this.values['_total'] || 0,
+        breakdown: this.values['_breakdown'] || [],
+        language: ShineI18n.lang(),
+        submitted_at: new Date().toISOString(),
+      };
+      console.log('Form submission:', data);
+      alert(ShineI18n.t({
+        en: `Thank you! Total: ${data.total}\u20AC`,
+        es: `\u00a1Gracias! Total: ${data.total}\u20AC`
+      }));
+    }
+  }
+
+  /** Redirect to Stripe Checkout via Apps Script backend */
+  _handleStripeCheckout(endpoint) {
+    // Collect instrument quantities
+    const instruments = {};
+    for (const key of Object.keys(this.values)) {
+      if (key.startsWith('instr_')) {
+        const qty = Number(this.values[key]) || 0;
+        if (qty > 0) {
+          instruments[key.replace('instr_', '')] = qty;
+        }
+      }
+    }
+
+    const payload = {
+      date: this.values.date || '',
+      start_time: this.values.start_time || '',
+      duration: this.values.duration || '',
+      participants: this.values.participants || '',
+      name: this.values.name || '',
+      email: this.values.email || '',
+      phone: this.values.phone || '',
+      additional_requests: this.values.additional_requests || '',
+      instruments: instruments,
+      language: ShineI18n.lang()
     };
 
-    console.log('Form submission:', data);
+    // Show loading state on button
+    const btn = this.root.querySelector('.sf-submit');
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = ShineI18n.t({ en: 'Redirecting to payment...', es: 'Redirigiendo al pago...' });
+      btn.style.opacity = '0.7';
+    }
 
-    // TODO: Send to backend API / Stripe
-    alert(ShineI18n.t({
-      en: `Thank you! Total: ${data.total}\u20AC`,
-      es: `\u00a1Gracias! Total: ${data.total}\u20AC`
-    }));
+    // Submit via hidden form POST (avoids CORS issues with Apps Script)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = endpoint;
+    form.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
   }
 }
