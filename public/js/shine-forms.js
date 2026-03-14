@@ -23,7 +23,13 @@ class ShineForm {
     for (const section of (formDef.sections || [])) {
       for (const field of (section.fields || [])) {
         if (field.default !== undefined) {
-          this.values[field.id] = field.default;
+          let val = field.default;
+          if (val === 'today' && field.type === 'date') {
+            val = new Date().toISOString().split('T')[0];
+          } else if (val === true && field.type === 'checkbox') {
+            val = 'yes';
+          }
+          this.values[field.id] = val;
         }
       }
     }

@@ -3,7 +3,7 @@
   "logo": "/public/img/logo.png",
   "title": { "en": "Music Practice Room", "es": "Sala de Ensayo" },
   "subtitle": { "en": "Reserve a room at Shine Music School", "es": "Reserva una sala en Estudio Shine" },
-  "submit_label": { "en": "Pay & Confirm Booking", "es": "Pagar y confirmar reserva" },
+  "submit_label": { "en": "Confirm Booking", "es": "Confirmar reserva" },
 
   "sections": [
     {
@@ -24,7 +24,8 @@
           "type": "date",
           "label": { "en": "Date", "es": "Fecha" },
           "required": true,
-          "min_date": "today"
+          "min_date": "today",
+          "default": "today"
         },
         {
           "id": "start_time",
@@ -165,9 +166,10 @@
         {
           "id": "accept_terms",
           "type": "checkbox",
+          "default": true,
           "label": {
-            "en": "Client pays at reception (cash, card, or Stripe)",
-            "es": "El cliente paga en recepción (efectivo, tarjeta o Stripe)"
+            "en": "Client pays at reception (cash, card, or Bizum)",
+            "es": "El cliente paga en recepción (efectivo, tarjeta o Bizum)"
           },
           "required": true
         }
