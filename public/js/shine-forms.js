@@ -19,6 +19,15 @@ class ShineForm {
     this._priceDetailEl = null;
     this._breakdownEl = null;
 
+    // Initialize default values from field definitions
+    for (const section of (formDef.sections || [])) {
+      for (const field of (section.fields || [])) {
+        if (field.default !== undefined) {
+          this.values[field.id] = field.default;
+        }
+      }
+    }
+
     // Listen for language changes
     ShineI18n.onChange(() => this.render());
 

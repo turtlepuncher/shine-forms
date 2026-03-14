@@ -585,6 +585,56 @@ textarea.sf-input {
   line-height: 1.6;
 }
 
+/* --- Pricing Grid (inside info box) --- */
+.sf-pricing-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sf-pricing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+.sf-pricing-main {
+  padding: 8px 12px;
+  background: var(--shine-dark-teal);
+  color: var(--shine-white);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.sf-pricing-main small {
+  font-weight: 400;
+  opacity: 0.8;
+}
+.sf-pricing-divider {
+  height: 1px;
+  background: var(--shine-grey);
+  margin: 4px 0;
+  opacity: 0.4;
+}
+.sf-pricing-label {
+  color: var(--tx-secondary);
+}
+.sf-pricing-value {
+  font-weight: 600;
+  color: var(--tx-primary);
+}
+.sf-pricing-accent {
+  color: var(--shine-deep-orange);
+}
+.sf-pricing-good {
+  color: var(--shine-green);
+}
+.sf-pricing-terms {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: var(--font-size-xs);
+  color: var(--shine-teal);
+}
+
 /* === Inline fields (side by side) === */
 .sf-row {
   display: flex;

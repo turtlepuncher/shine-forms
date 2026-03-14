@@ -28,6 +28,7 @@ const ShineCalc = (() => {
     // Date context
     const dateVal = getVal('date');
     const isSunday = ctx.is_sunday !== undefined ? ctx.is_sunday : _isSunday(dateVal);
+    const isSaturday = ctx.is_saturday !== undefined ? ctx.is_saturday : _isSaturday(dateVal);
     const isSameDay = ctx.is_same_day !== undefined ? ctx.is_same_day : _isToday(dateVal);
     const sameDaySurcharge = Number(calcDef.same_day_surcharge) || 0;
 
@@ -43,7 +44,7 @@ const ShineCalc = (() => {
     let surchargeHours = 0;
 
     for (let h = startHour; h < endHour; h++) {
-      if (h >= 17) {
+      if (!isSaturday && h >= 17) {
         surchargeHours++;
       } else {
         normalHours++;
@@ -116,6 +117,12 @@ const ShineCalc = (() => {
     total += instrTotal;
 
     return { total, breakdown };
+  }
+
+  function _isSaturday(dateStr) {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    return d.getDay() === 6;
   }
 
   function _isSunday(dateStr) {

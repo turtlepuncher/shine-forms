@@ -9,8 +9,8 @@
     {
       "id": "pricing-info",
       "info": {
-        "en": "<strong>Room rental: 9€/hour</strong> for 1 participant.<br>After 17h: +4€/hour surcharge. Sundays: +25€ opening fee.<br>Extra participants: +1€/person/hour.<br><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Terms & Conditions</a>",
-        "es": "<strong>Alquiler de sala: 9€/hora</strong> para 1 participante.<br>Después de las 17h: +4€/hora de recargo. Domingos: +25€ de apertura.<br>Participantes adicionales: +1€/persona/hora.<br><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank'>Términos y condiciones</a>"
+        "en": "<div class='sf-pricing-grid'><div class='sf-pricing-row sf-pricing-main'><span class='sf-pricing-label'>Room rental</span><span class='sf-pricing-value'>9€<small>/hour</small></span></div><div class='sf-pricing-divider'></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Mon–Fri after 17h</span><span class='sf-pricing-value sf-pricing-accent'>+4€/hour</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Saturdays (all day)</span><span class='sf-pricing-value sf-pricing-good'>No surcharge</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Sundays</span><span class='sf-pricing-value sf-pricing-accent'>+25€ opening fee</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Extra participants</span><span class='sf-pricing-value'>+1€/person/hour</span></div></div><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank' class='sf-pricing-terms'>Terms & Conditions</a>",
+        "es": "<div class='sf-pricing-grid'><div class='sf-pricing-row sf-pricing-main'><span class='sf-pricing-label'>Alquiler de sala</span><span class='sf-pricing-value'>9€<small>/hora</small></span></div><div class='sf-pricing-divider'></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Lun–Vie después de las 17h</span><span class='sf-pricing-value sf-pricing-accent'>+4€/hora</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Sábados (todo el día)</span><span class='sf-pricing-value sf-pricing-good'>Sin recargo</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Domingos</span><span class='sf-pricing-value sf-pricing-accent'>+25€ apertura</span></div><div class='sf-pricing-row'><span class='sf-pricing-label'>Participantes extra</span><span class='sf-pricing-value'>+1€/persona/hora</span></div></div><a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank' class='sf-pricing-terms'>Términos y condiciones</a>"
       },
       "fields": []
     },
@@ -31,6 +31,7 @@
           "type": "dropdown",
           "label": { "en": "Starting from", "es": "Hora de inicio" },
           "placeholder": { "en": "Select a time", "es": "Selecciona una hora" },
+          "default": "12H",
           "options": [
             { "value": "10H", "label": "10:00" },
             { "value": "11H", "label": "11:00" },
