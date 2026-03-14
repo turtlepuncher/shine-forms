@@ -52,15 +52,25 @@ class ShineForm {
     // Header
     form.appendChild(this._renderHeader());
 
-    // Sections
+    // Sections (before submit)
+    const afterSubmit = [];
     for (const section of this.def.sections || []) {
       const el = this._renderSection(section);
       this.sectionEls[section.id] = el;
-      form.appendChild(el);
+      if (section.position === 'after_submit') {
+        afterSubmit.push(el);
+      } else {
+        form.appendChild(el);
+      }
     }
 
     // Submit button
     form.appendChild(this._renderSubmit());
+
+    // Sections (after submit)
+    for (const el of afterSubmit) {
+      form.appendChild(el);
+    }
 
     this.root.appendChild(form);
 
