@@ -1,6 +1,6 @@
 {
   "id": "student-registration",
-  "logo": "img/logo.png",
+  "logo": "/public/img/logo.png",
   "title": { "en": "Student Registration", "es": "Inscripción de Alumno" },
   "subtitle": { "en": "Start your musical journey with Shine", "es": "Comienza tu camino musical con Shine" },
   "submit_label": { "en": "Register & Pay", "es": "Inscribirse y pagar" },

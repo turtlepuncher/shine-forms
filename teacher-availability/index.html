@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shine — Teacher Availability</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Shine Forms Theme Variables (from theme.css) ── */
+    :root {
+      --shine-dark-teal: #03444A;
+      --shine-teal: #00A8A8;
+      --shine-mid-teal: #55BFC7;
+      --shine-light-teal: #9AD3DA;
+      --shine-orange: #FF924D;
+      --shine-deep-orange: #E66414;
+      --shine-white: #FFFFFF;
+      --shine-grey: #CCCCCC;
+      --shine-secondary-grey: #666666;
+      --shine-green: #66BB6A;
+      --shine-green-bg: #E8F5E9;
+      --shine-red: #C62828;
+      --shine-red-bg: #FFEBEE;
+      --sf-bg: #F4F8F8;
+      --sf-card: #FFFFFF;
+      --sf-border: #D8E2E3;
+      --sf-border-focus: var(--shine-teal);
+      --tx-primary: var(--shine-dark-teal);
+      --tx-secondary: var(--shine-secondary-grey);
+      --tx-placeholder: #A0A8AB;
+      --tx-inverse: var(--shine-white);
+      --tx-error: var(--shine-red);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.5rem;
+      --font-size-2xl: 2rem;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --shadow-sm: 0 1px 3px rgba(3, 68, 74, 0.08);
+      --shadow-md: 0 4px 12px rgba(3, 68, 74, 0.1);
+      --shadow-lg: 0 8px 24px rgba(3, 68, 74, 0.12);
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+      --form-max-width: 720px;
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-family);
+      color: var(--tx-primary);
+      background: var(--sf-bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Form Container ── */
+    .sf-form {
+      max-width: var(--form-max-width);
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    /* ── Header ── */
+    .sf-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+      padding: var(--space-2xl) var(--space-lg);
+      background: linear-gradient(135deg, var(--shine-dark-teal) 0%, var(--shine-teal) 100%);
+      border-radius: var(--radius-lg);
+      color: var(--tx-inverse);
+      position: relative;
+      overflow: hidden;
+    }
+    .sf-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+    .sf-header__logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: var(--space-md);
+    }
+    .sf-header__title {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+      letter-spacing: -0.02em;
+    }
+    .sf-header__subtitle {
+      font-size: var(--font-size-base);
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    /* ── Language Toggle ── */
+    .sf-lang-toggle {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      display: flex;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-pill);
+      padding: 2px;
+    }
+    .sf-lang-btn {
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: inherit;
+    }
+    .sf-lang-btn:hover { color: var(--tx-inverse); }
+    .sf-lang-btn.active {
+      background: var(--tx-inverse);
+      color: var(--shine-dark-teal);
+    }
+
+    /* ── Sections ── */
+    .sf-section {
+      background: var(--sf-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--sf-border);
+    }
+    .sf-section__title {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--shine-dark-teal);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--shine-orange);
+    }
+
+    /* ── Labels ── */
+    .sf-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--tx-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .sf-description {
+      font-size: var(--font-size-sm);
+      color: var(--tx-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    /* ── Inputs ── */
+    .sf-input, .sf-select {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: var(--font-size-base);
+      font-family: inherit;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-md);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      outline: none;
+    }
+    .sf-input::placeholder { color: var(--tx-placeholder); }
+    .sf-input:hover, .sf-select:hover { border-color: var(--shine-mid-teal); }
+    .sf-input:focus, .sf-select:focus {
+      border-color: var(--shine-teal);
+      box-shadow: 0 0 0 3px rgba(0, 168, 168, 0.15);
+    }
+    .sf-input.error {
+      border-color: var(--tx-error);
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+    }
+    .sf-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    /* ── Submit Button ── */
+    .sf-submit {
+      width: 100%;
+      padding: 16px 32px;
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--tx-inverse);
+      background: linear-gradient(135deg, var(--shine-orange) 0%, var(--shine-deep-orange) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-md);
+    }
+    .sf-submit:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+    .sf-submit:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+    .sf-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Error Messages ── */
+    .sf-error {
+      font-size: var(--font-size-sm);
+      color: var(--tx-error);
+      margin-top: var(--space-xs);
+    }
+
+    /* ── PIN Gate ── */
+    #pin-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--space-md);
+    }
+    .pin-card {
+      background: var(--sf-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl) var(--space-xl);
+      box-shadow: var(--shadow-lg);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .pin-card__icon {
+      font-size: 48px;
+      margin-bottom: var(--space-md);
+    }
+    .pin-card__title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--shine-dark-teal);
+      margin-bottom: var(--space-xs);
+    }
+    .pin-card__subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--tx-secondary);
+      margin-bottom: var(--space-xl);
+    }
+    .pin-input {
+      width: 100%;
+      padding: 16px;
+      font-size: var(--font-size-xl);
+      font-family: inherit;
+      text-align: center;
+      letter-spacing: 0.3em;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 2px solid var(--sf-border);
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      margin-bottom: var(--space-md);
+    }
+    .pin-input:focus {
+      border-color: var(--shine-teal);
+      box-shadow: 0 0 0 3px rgba(0, 168, 168, 0.15);
+    }
+    .pin-input.error {
+      border-color: var(--tx-error);
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+    }
+    .pin-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--tx-inverse);
+      background: linear-gradient(135deg, var(--shine-dark-teal) 0%, var(--shine-teal) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-md);
+    }
+    .pin-btn:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+    .pin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .pin-error {
+      color: var(--tx-error);
+      font-size: var(--font-size-sm);
+      margin-top: var(--space-md);
+      display: none;
+    }
+    .pin-lang-toggle {
+      margin-top: var(--space-xl);
+      display: flex;
+      justify-content: center;
+    }
+    .pin-lang-toggle .sf-lang-toggle {
+      position: static;
+      background: rgba(0, 168, 168, 0.08);
+    }
+    .pin-lang-toggle .sf-lang-btn {
+      color: var(--tx-secondary);
+    }
+    .pin-lang-toggle .sf-lang-btn.active {
+      background: var(--shine-dark-teal);
+      color: var(--tx-inverse);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    /* ── Teacher Combobox ── */
+    .combobox-wrap {
+      position: relative;
+    }
+    .combobox-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 240px;
+      overflow-y: auto;
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      box-shadow: var(--shadow-md);
+      z-index: 50;
+      display: none;
+    }
+    .combobox-list.open { display: block; }
+    .combobox-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: var(--font-size-base);
+      transition: background var(--transition-fast);
+    }
+    .combobox-item:hover, .combobox-item.highlighted {
+      background: rgba(0, 168, 168, 0.08);
+    }
+    .combobox-item mark {
+      background: rgba(0, 168, 168, 0.2);
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    /* ── Section Title Row (title + same-as-before inline) ── */
+    .sf-section__title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--shine-orange);
+      flex-wrap: wrap;
+    }
+    .sf-section__title-row .sf-section__title {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    /* ── Same-as-before Toggle ── */
+    .same-as-before-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(0, 168, 168, 0.06);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      color: var(--tx-secondary);
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .same-as-before-label:hover {
+      border-color: var(--shine-teal);
+      background: rgba(0, 168, 168, 0.1);
+      color: var(--tx-primary);
+    }
+    .same-as-before-toggle {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--sf-border);
+      border-radius: 3px;
+      appearance: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+    .same-as-before-toggle:checked {
+      background: var(--shine-teal);
+      border-color: var(--shine-teal);
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .same-as-before-label:has(.same-as-before-toggle:checked) {
+      border-color: var(--shine-teal);
+      background: rgba(0, 168, 168, 0.15);
+      color: var(--shine-dark-teal);
+    }
+    .section-collapsed {
+      display: none;
+    }
+
+    /* ── Day Rows ── */
+    .day-row {
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--sf-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      transition: all var(--transition-fast);
+    }
+    .day-row.active {
+      background: var(--sf-card);
+      border-color: var(--sf-border);
+    }
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    .day-toggle {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-sm);
+      appearance: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+    .day-toggle:checked {
+      background: var(--shine-teal);
+      border-color: var(--shine-teal);
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5L4.5 8.5L11 1.5' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .day-label {
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      color: var(--tx-primary);
+      min-width: 90px;
+    }
+    .day-row:not(.active) .day-label {
+      color: var(--tx-secondary);
+    }
+    .day-slots {
+      display: none;
+      padding-left: 28px;
+    }
+    .day-row.active .day-slots { display: block; }
+    .slot-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .slot-row select {
+      padding: 8px 32px 8px 10px;
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color var(--transition-fast);
+      min-width: 100px;
+    }
+    .slot-row select:focus {
+      border-color: var(--shine-teal);
+      box-shadow: 0 0 0 2px rgba(0, 168, 168, 0.12);
+    }
+    .slot-separator {
+      font-size: var(--font-size-sm);
+      color: var(--tx-secondary);
+      font-weight: 500;
+    }
+    .slot-remove {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--shine-red);
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 18px;
+      transition: background var(--transition-fast);
+      flex-shrink: 0;
+    }
+    .slot-remove:hover { background: var(--shine-red-bg); }
+    .add-slot-btn {
+      border: none;
+      background: transparent;
+      color: var(--shine-teal);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color var(--transition-fast);
+    }
+    .add-slot-btn:hover { color: var(--shine-dark-teal); }
+
+    /* ── Urgent Gaps ── */
+    .urgent-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--sf-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--sf-border);
+      flex-wrap: wrap;
+    }
+    .urgent-entry select, .urgent-entry input {
+      padding: 8px 10px;
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .urgent-entry select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      cursor: pointer;
+      min-width: 100px;
+    }
+    .urgent-entry select:focus, .urgent-entry input:focus {
+      border-color: var(--shine-teal);
+      box-shadow: 0 0 0 2px rgba(0, 168, 168, 0.12);
+    }
+    .urgent-note {
+      flex: 1;
+      min-width: 120px;
+    }
+    .add-urgent-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      border: 1.5px dashed var(--shine-teal);
+      background: transparent;
+      color: var(--shine-teal);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      font-family: inherit;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .add-urgent-btn:hover {
+      background: rgba(0, 168, 168, 0.06);
+      border-color: var(--shine-dark-teal);
+      color: var(--shine-dark-teal);
+    }
+
+    /* ── Holidays Section ── */
+    .sf-section.holidays-section {
+      background: linear-gradient(135deg, #FFF8F0 0%, #FFF1E6 100%);
+      border-color: var(--shine-orange);
+      border-width: 2px;
+    }
+    .sf-section.holidays-section .sf-section__title {
+      color: var(--shine-deep-orange);
+      border-bottom-color: var(--shine-orange);
+    }
+    .holidays-icon {
+      margin-right: 6px;
+    }
+    .holiday-entry {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--sf-card);
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--shine-orange);
+      flex-wrap: wrap;
+    }
+    .holiday-entry input[type="date"] {
+      padding: 8px 10px;
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+    }
+    .holiday-entry input[type="date"]:focus {
+      border-color: var(--shine-orange);
+      box-shadow: 0 0 0 2px rgba(255, 146, 77, 0.15);
+    }
+    .holiday-entry input[type="text"] {
+      padding: 8px 10px;
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--tx-primary);
+      background: var(--sf-card);
+      border: 1.5px solid var(--sf-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      flex: 1;
+      min-width: 120px;
+      transition: border-color var(--transition-fast);
+    }
+    .holiday-entry input[type="text"]:focus {
+      border-color: var(--shine-orange);
+      box-shadow: 0 0 0 2px rgba(255, 146, 77, 0.15);
+    }
+    .add-holiday-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      border: 1.5px dashed var(--shine-deep-orange);
+      background: transparent;
+      color: var(--shine-deep-orange);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      font-family: inherit;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .add-holiday-btn:hover {
+      background: rgba(255, 146, 77, 0.06);
+      border-color: var(--shine-dark-teal);
+      color: var(--shine-dark-teal);
+    }
+
+    /* ── Preview Banner ── */
+    .preview-banner {
+      background: linear-gradient(135deg, var(--shine-orange), var(--shine-deep-orange));
+      color: white;
+      text-align: center;
+      padding: 8px var(--space-md);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Success / Error feedback ── */
+    .feedback-card {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-xl);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-lg);
+    }
+    .feedback-card.success {
+      background: var(--shine-green-bg);
+      border: 1px solid var(--shine-green);
+    }
+    .feedback-card.error {
+      background: var(--shine-red-bg);
+      border: 1px solid var(--shine-red);
+    }
+    .feedback-card__icon { font-size: 48px; margin-bottom: var(--space-md); }
+    .feedback-card__title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+    }
+    .feedback-card__text {
+      font-size: var(--font-size-sm);
+      color: var(--tx-secondary);
+      margin-bottom: var(--space-lg);
+    }
+    .feedback-card .sf-submit {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Hidden utility ── */
+    .hidden { display: none !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .sf-form { padding: var(--space-md) var(--space-sm); }
+      .sf-header {
+        padding: var(--space-xl) var(--space-md);
+        border-radius: var(--radius-md);
+      }
+      .sf-header__title { font-size: var(--font-size-xl); }
+      .sf-section {
+        padding: var(--space-lg) var(--space-md);
+        border-radius: var(--radius-md);
+      }
+      .slot-row { flex-wrap: wrap; }
+      .day-label { min-width: 70px; font-size: var(--font-size-sm); }
+      .day-slots { padding-left: 0; }
+      .urgent-entry { flex-direction: column; }
+      .urgent-entry select, .urgent-entry input { width: 100%; }
+      .holiday-entry { flex-wrap: wrap; }
+      .holiday-entry input[type="date"] { flex: 1; min-width: 130px; }
+      .holiday-entry input[type="text"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- PIN SCREEN                                                             -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-card__icon">&#127925;</div>
+    <div class="pin-card__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
+    <div class="pin-card__subtitle" data-en="Enter the access PIN to continue" data-es="Ingresa el PIN de acceso para continuar">Ingresa el PIN de acceso para continuar</div>
+    <input type="password" inputmode="numeric" class="pin-input" id="pin-input" maxlength="10" placeholder="PIN" autocomplete="off">
+    <button class="pin-btn" id="pin-btn" data-en="Enter" data-es="Entrar">Entrar</button>
+    <div class="pin-error" id="pin-error" data-en="Incorrect PIN. Please try again." data-es="PIN incorrecto. Intenta de nuevo.">PIN incorrecto. Intenta de nuevo.</div>
+    <div class="pin-lang-toggle">
+      <div class="sf-lang-toggle">
+        <button class="sf-lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
+        <button class="sf-lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN FORM (hidden until PIN is verified)                               -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div id="form-screen" class="hidden">
+  <div class="sf-form">
+
+    <!-- Header -->
+    <div class="sf-header">
+      <div class="sf-lang-toggle">
+        <button class="sf-lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
+        <button class="sf-lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+      </div>
+      <img src="../img/logo.png" alt="Shine Music School" class="sf-header__logo">
+      <div class="sf-header__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
+      <div class="sf-header__subtitle" data-en="Update your schedule gaps and general availability" data-es="Actualiza tus huecos de horario y disponibilidad general">Actualiza tus huecos de horario y disponibilidad general</div>
+    </div>
+
+    <!-- Section 1: Teacher -->
+    <div class="sf-section">
+      <div class="sf-section__title" data-en="Teacher" data-es="Profesor">Profesor</div>
+      <label class="sf-label" data-en="Your name" data-es="Tu nombre">Tu nombre</label>
+      <div class="combobox-wrap">
+        <input type="text" class="sf-input" id="teacher-input" autocomplete="off"
+               data-placeholder-en="Start typing to search..."
+               data-placeholder-es="Escribe para buscar...">
+        <div class="combobox-list" id="teacher-list"></div>
+      </div>
+      <div class="sf-error hidden" id="teacher-error" data-en="Please select a teacher" data-es="Por favor selecciona un profesor">Por favor selecciona un profesor</div>
+    </div>
+
+    <!-- Section 2: Gaps in Schedule -->
+    <div class="sf-section">
+      <div class="sf-section__title-row">
+        <div class="sf-section__title" data-en="Gaps in Your Schedule" data-es="Huecos en Tu Horario">Huecos en Tu Horario</div>
+        <label class="same-as-before-label">
+          <input type="checkbox" class="same-as-before-toggle" id="gaps-same-toggle" onchange="toggleSameAsBefore('gaps')">
+          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
+        </label>
+      </div>
+      <div class="sf-description" data-en="Time slots that need filling &mdash; for example, a student has left the school, leaving a gap in your schedule. These will be prioritized when matching new students." data-es="Huecos que necesitan llenarse &mdash; por ejemplo, un alumno ha dejado la escuela, dejando un hueco en tu horario. Se priorizar&aacute;n al asignar nuevos alumnos.">Huecos que necesitan llenarse &mdash; por ejemplo, un alumno ha dejado la escuela, dejando un hueco en tu horario. Se priorizar&aacute;n al asignar nuevos alumnos.</div>
+      <div id="gaps-content">
+        <div id="urgent-entries"></div>
+        <button type="button" class="add-urgent-btn" id="add-urgent-btn" data-en="+ Add gap" data-es="+ Agregar hueco" onclick="addUrgentEntry()">+ Agregar hueco</button>
+      </div>
+    </div>
+
+    <!-- Section 3: General Availability -->
+    <div class="sf-section">
+      <div class="sf-section__title-row">
+        <div class="sf-section__title" data-en="General Availability" data-es="Disponibilidad General">Disponibilidad General</div>
+        <label class="same-as-before-label">
+          <input type="checkbox" class="same-as-before-toggle" id="general-same-toggle" onchange="toggleSameAsBefore('general')">
+          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
+        </label>
+      </div>
+      <div class="sf-description" data-en="This is different from gaps above &mdash; here, set the days and time blocks when you're generally available to teach at Shine. You can add multiple time slots per day." data-es="Esto es diferente de los huecos de arriba &mdash; aqu&iacute;, indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.">Esto es diferente de los huecos de arriba &mdash; aqu&iacute;, indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.</div>
+      <div id="general-content">
+        <div id="general-days"></div>
+      </div>
+    </div>
+
+    <!-- Section 4: Holidays / Vacaciones -->
+    <div class="sf-section holidays-section">
+      <div class="sf-section__title">
+        <span class="holidays-icon">&#9992;&#65039;</span><span data-en="Holidays / Time Off" data-es="Vacaciones / Ausencias">Vacaciones / Ausencias</span>
+      </div>
+      <div class="sf-description" data-en="Add any upcoming dates you will NOT be available (holidays, travel, personal days)." data-es="Agrega las fechas en las que NO estar&aacute;s disponible (vacaciones, viajes, d&iacute;as personales).">Agrega las fechas en las que NO estar&aacute;s disponible (vacaciones, viajes, d&iacute;as personales).</div>
+      <div id="holiday-entries"></div>
+      <button type="button" class="add-holiday-btn" id="add-holiday-btn" data-en="+ Add holiday period" data-es="+ Agregar periodo de ausencia" onclick="addHolidayEntry()">+ Agregar periodo de ausencia</button>
+    </div>
+
+    <!-- Submit -->
+    <button class="sf-submit" id="submit-btn" onclick="submitForm()">
+      <span data-en="Save Availability" data-es="Guardar Disponibilidad">Guardar Disponibilidad</span>
+    </button>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- FEEDBACK SCREEN (shown after submit)                                   -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div id="feedback-screen" class="hidden">
+  <div class="sf-form">
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-card__icon" id="feedback-icon"></div>
+      <div class="feedback-card__title" id="feedback-title"></div>
+      <div class="feedback-card__text" id="feedback-text"></div>
+      <button class="sf-submit" id="feedback-btn" onclick="resetForm()"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════════════════════════════════════
+
+// Replace this URL with your Google Apps Script deployment URL
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhlmGwrnYDU1Ppyoj3j9cVmRvCM5fC10fAPjvRtiuyC-zwy7bh9BzJ1TRMpwzUgsaO/exec";
+
+// Preview mode: auto-detected when URL is not configured
+const IS_PREVIEW = APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE";
+
+// Demo teacher list for preview mode
+const DEMO_TEACHERS = [
+  "Alexandra Aykaeva", "Alexis Ortega", "Andrea Neuenschwander",
+  "Antonio Parraguez", "Ariel Casagrande", "Branislav Grbic",
+  "Carla Lalomia", "Cesar Munera", "Damian Lois", "Dani Pucha",
+  "Denisse Iturra", "Diego Caicedo", "Diego Quezada", "Dusan Jevtovic",
+  "Emilio Palma Vucetich", "Felipe Garcia Chacon", "Gabriela Grabowski",
+  "Gabriele Cortinovis", "Gian Carlo Scevola", "Ignacio Flores",
+  "Isidora Tealdo", "Johannes North", "Jordi Carrera", "Jose Maria Moure",
+  "Juan Carlos Buchan", "Kadija Teles", "Katarina Rudivic",
+  "Lidia Garc\u00eda Bascompta", "Lucrecia Carrizo", "Luis Cant\u00fa",
+  "Majo Vidal", "Manuela Squella", "Marcos Perez Rivero", "Mario Preciado",
+  "Matias Mu\u00f1oz", "Milos Sajin", "Natalia De La Fuente",
+  "Nikos Sachpazis", "Noelia Fern\u00e1ndez Garc\u00eda",
+  "Oscar Augusto Dur\u00e1n Guti\u00e9rrez", "Sam Russell", "Sebastian Pan",
+  "Tijana Taya", "Yoli Campos"
+];
+
+// ══════════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════════
+
+let currentLang = "es";
+let teachers = [];
+let selectedTeacher = "";
+let pin = "";
+
+// Day keys and bilingual labels
+const DAYS = [
+  { key: "mon", en: "Monday",    es: "Lunes" },
+  { key: "tue", en: "Tuesday",   es: "Martes" },
+  { key: "wed", en: "Wednesday", es: "Mi\u00e9rcoles" },
+  { key: "thu", en: "Thursday",  es: "Jueves" },
+  { key: "fri", en: "Friday",    es: "Viernes" },
+  { key: "sat", en: "Saturday",  es: "S\u00e1bado" },
+];
+
+// Generate time options (8:00 → 22:00 in 15-min steps)
+function timeOptions() {
+  const opts = [];
+  for (let h = 8; h <= 22; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      if (h === 22 && m > 0) break;
+      opts.push(String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0"));
+    }
+  }
+  return opts;
+}
+const TIMES = timeOptions();
+
+// ══════════════════════════════════════════════════════════════════════════
+// LANGUAGE
+// ══════════════════════════════════════════════════════════════════════════
+
+function switchLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("shine-avail-lang", lang);
+
+  // Update all data-en / data-es elements
+  document.querySelectorAll("[data-en]").forEach(el => {
+    const text = el.getAttribute("data-" + lang);
+    if (text !== null) el.innerHTML = text;
+  });
+
+  // Update placeholder attributes
+  document.querySelectorAll("[data-placeholder-en]").forEach(el => {
+    const ph = el.getAttribute("data-placeholder-" + lang);
+    if (ph) el.placeholder = ph;
+  });
+
+  // Update day labels in general availability
+  document.querySelectorAll(".day-label").forEach(el => {
+    const key = el.dataset.dayKey;
+    const day = DAYS.find(d => d.key === key);
+    if (day) el.textContent = day[lang];
+  });
+
+  // Update day dropdowns in urgent entries
+  document.querySelectorAll(".urgent-day-select").forEach(sel => {
+    Array.from(sel.options).forEach((opt, i) => {
+      if (i === 0) {
+        opt.textContent = lang === "en" ? "Day..." : "D\u00eda...";
+      } else {
+        const day = DAYS.find(d => d.key === opt.value);
+        if (day) opt.textContent = day[lang];
+      }
+    });
+  });
+
+  // Update lang toggle buttons
+  document.querySelectorAll(".sf-lang-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === lang);
+  });
+
+  // Update document lang
+  document.documentElement.lang = lang;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PIN
+// ══════════════════════════════════════════════════════════════════════════
+
+async function verifyPin() {
+  const input = document.getElementById("pin-input");
+  const btn = document.getElementById("pin-btn");
+  const error = document.getElementById("pin-error");
+  const val = input.value.trim();
+
+  if (!val) {
+    input.classList.add("error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  error.style.display = "none";
+  input.classList.remove("error");
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL + "?action=teachers&pin=" + encodeURIComponent(val));
+    const data = await resp.json();
+
+    if (data.error) {
+      input.classList.add("error", "shake");
+      error.style.display = "block";
+      setTimeout(() => input.classList.remove("shake"), 400);
+    } else {
+      pin = val;
+      sessionStorage.setItem("shine-avail-pin", pin);
+      teachers = data.teachers || [];
+      showForm();
+    }
+  } catch (e) {
+    // Network error — allow offline development / fallback
+    error.style.display = "block";
+    error.textContent = currentLang === "en"
+      ? "Connection error. Check your internet."
+      : "Error de conexi\u00f3n. Verifica tu internet.";
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = currentLang === "en" ? "Enter" : "Entrar";
+}
+
+document.getElementById("pin-btn").addEventListener("click", verifyPin);
+document.getElementById("pin-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") verifyPin();
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// TEACHER COMBOBOX
+// ══════════════════════════════════════════════════════════════════════════
+
+function initCombobox() {
+  const input = document.getElementById("teacher-input");
+  const list = document.getElementById("teacher-list");
+  let highlightIdx = -1;
+
+  function renderList(filter) {
+    const q = (filter || "").toLowerCase();
+    const matches = q
+      ? teachers.filter(t => t.toLowerCase().includes(q))
+      : teachers;
+
+    list.innerHTML = "";
+    highlightIdx = -1;
+
+    if (matches.length === 0) {
+      list.classList.remove("open");
+      return;
+    }
+
+    matches.forEach((name, i) => {
+      const div = document.createElement("div");
+      div.className = "combobox-item";
+      // Highlight matching text
+      if (q) {
+        const idx = name.toLowerCase().indexOf(q);
+        div.innerHTML = name.substring(0, idx)
+          + "<mark>" + name.substring(idx, idx + q.length) + "</mark>"
+          + name.substring(idx + q.length);
+      } else {
+        div.textContent = name;
+      }
+      div.addEventListener("mousedown", e => {
+        e.preventDefault();
+        selectTeacher(name);
+      });
+      list.appendChild(div);
+    });
+
+    list.classList.add("open");
+  }
+
+  function selectTeacher(name) {
+    input.value = name;
+    selectedTeacher = name;
+    list.classList.remove("open");
+    document.getElementById("teacher-error").classList.add("hidden");
+  }
+
+  function navigate(dir) {
+    const items = list.querySelectorAll(".combobox-item");
+    if (!items.length) return;
+    items.forEach(it => it.classList.remove("highlighted"));
+    highlightIdx = Math.max(0, Math.min(items.length - 1, highlightIdx + dir));
+    items[highlightIdx].classList.add("highlighted");
+    items[highlightIdx].scrollIntoView({ block: "nearest" });
+  }
+
+  input.addEventListener("input", () => {
+    selectedTeacher = "";
+    renderList(input.value);
+  });
+
+  input.addEventListener("focus", () => {
+    if (!list.classList.contains("open")) renderList(input.value);
+  });
+
+  input.addEventListener("blur", () => {
+    setTimeout(() => list.classList.remove("open"), 150);
+  });
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); navigate(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); navigate(-1); }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      const items = list.querySelectorAll(".combobox-item");
+      if (highlightIdx >= 0 && items[highlightIdx]) {
+        selectTeacher(items[highlightIdx].textContent);
+      } else if (items.length === 1) {
+        selectTeacher(items[0].textContent);
+      }
+    }
+    else if (e.key === "Escape") { list.classList.remove("open"); }
+  });
+
+  // Set placeholder
+  input.placeholder = currentLang === "en" ? "Start typing to search..." : "Escribe para buscar...";
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// SAME-AS-BEFORE TOGGLE
+// ══════════════════════════════════════════════════════════════════════════
+
+function toggleSameAsBefore(section) {
+  if (section === "gaps") {
+    const checked = document.getElementById("gaps-same-toggle").checked;
+    const content = document.getElementById("gaps-content");
+    content.classList.toggle("section-collapsed", checked);
+  } else if (section === "general") {
+    const checked = document.getElementById("general-same-toggle").checked;
+    const content = document.getElementById("general-content");
+    content.classList.toggle("section-collapsed", checked);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// GENERAL AVAILABILITY
+// ══════════════════════════════════════════════════════════════════════════
+
+function buildTimeSelect(selectedValue) {
+  const sel = document.createElement("select");
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "--:--";
+  sel.appendChild(placeholder);
+  TIMES.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.textContent = t;
+    if (t === selectedValue) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  return sel;
+}
+
+function addSlotRow(container, dayKey) {
+  const row = document.createElement("div");
+  row.className = "slot-row";
+  row.dataset.dayKey = dayKey;
+
+  const startSel = buildTimeSelect("");
+  const sep = document.createElement("span");
+  sep.className = "slot-separator";
+  sep.textContent = "\u2013"; // en-dash
+  const endSel = buildTimeSelect("");
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "slot-remove";
+  removeBtn.innerHTML = "&times;";
+  removeBtn.title = currentLang === "en" ? "Remove" : "Eliminar";
+  removeBtn.addEventListener("click", () => {
+    row.remove();
+    // If no slots left, add one empty one back
+    const remaining = container.querySelectorAll(".slot-row");
+    if (remaining.length === 0) addSlotRow(container, dayKey);
+  });
+
+  row.appendChild(startSel);
+  row.appendChild(sep);
+  row.appendChild(endSel);
+  row.appendChild(removeBtn);
+  container.appendChild(row);
+}
+
+function buildDayRows() {
+  const wrap = document.getElementById("general-days");
+  wrap.innerHTML = "";
+
+  DAYS.forEach(day => {
+    const row = document.createElement("div");
+    row.className = "day-row";
+    row.id = "day-" + day.key;
+
+    const header = document.createElement("div");
+    header.className = "day-header";
+
+    const toggle = document.createElement("input");
+    toggle.type = "checkbox";
+    toggle.className = "day-toggle";
+    toggle.id = "toggle-" + day.key;
+    toggle.addEventListener("change", () => {
+      row.classList.toggle("active", toggle.checked);
+    });
+
+    const label = document.createElement("label");
+    label.className = "day-label";
+    label.dataset.dayKey = day.key;
+    label.textContent = day[currentLang];
+    label.htmlFor = "toggle-" + day.key;
+    label.style.cursor = "pointer";
+
+    header.appendChild(toggle);
+    header.appendChild(label);
+
+    const slotsWrap = document.createElement("div");
+    slotsWrap.className = "day-slots";
+    slotsWrap.id = "slots-" + day.key;
+
+    // One empty slot by default
+    addSlotRow(slotsWrap, day.key);
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "add-slot-btn";
+    addBtn.textContent = currentLang === "en" ? "+ Add time slot" : "+ Agregar franja";
+    addBtn.dataset.en = "+ Add time slot";
+    addBtn.dataset.es = "+ Agregar franja";
+    addBtn.addEventListener("click", () => addSlotRow(slotsWrap, day.key));
+
+    slotsWrap.appendChild(addBtn);
+
+    row.appendChild(header);
+    row.appendChild(slotsWrap);
+    wrap.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// URGENT GAPS
+// ══════════════════════════════════════════════════════════════════════════
+
+function addUrgentEntry() {
+  const wrap = document.getElementById("urgent-entries");
+  const entry = document.createElement("div");
+  entry.className = "urgent-entry";
+
+  // Day dropdown
+  const daySel = document.createElement("select");
+  daySel.className = "urgent-day-select";
+  const phOpt = document.createElement("option");
+  phOpt.value = "";
+  phOpt.textContent = currentLang === "en" ? "Day..." : "D\u00eda...";
+  daySel.appendChild(phOpt);
+  DAYS.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d.key;
+    opt.textContent = d[currentLang];
+    daySel.appendChild(opt);
+  });
+
+  // Start time
+  const startSel = buildTimeSelect("");
+  const sep = document.createElement("span");
+  sep.className = "slot-separator";
+  sep.textContent = "\u2013";
+  const endSel = buildTimeSelect("");
+
+  // Note
+  const note = document.createElement("input");
+  note.type = "text";
+  note.className = "urgent-note";
+  note.placeholder = currentLang === "en" ? "Note (optional)" : "Nota (opcional)";
+  note.dataset.placeholderEn = "Note (optional)";
+  note.dataset.placeholderEs = "Nota (opcional)";
+
+  // Remove button
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "slot-remove";
+  removeBtn.innerHTML = "&times;";
+  removeBtn.addEventListener("click", () => entry.remove());
+
+  entry.appendChild(daySel);
+  entry.appendChild(startSel);
+  entry.appendChild(sep);
+  entry.appendChild(endSel);
+  entry.appendChild(note);
+  entry.appendChild(removeBtn);
+  wrap.appendChild(entry);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// HOLIDAYS
+// ══════════════════════════════════════════════════════════════════════════
+
+function addHolidayEntry() {
+  const wrap = document.getElementById("holiday-entries");
+  const entry = document.createElement("div");
+  entry.className = "holiday-entry";
+
+  // From date
+  const fromLabel = document.createElement("span");
+  fromLabel.className = "slot-separator";
+  fromLabel.dataset.en = "From";
+  fromLabel.dataset.es = "Desde";
+  fromLabel.textContent = currentLang === "en" ? "From" : "Desde";
+
+  const fromDate = document.createElement("input");
+  fromDate.type = "date";
+
+  const toLabel = document.createElement("span");
+  toLabel.className = "slot-separator";
+  toLabel.dataset.en = "to";
+  toLabel.dataset.es = "hasta";
+  toLabel.textContent = currentLang === "en" ? "to" : "hasta";
+
+  const toDate = document.createElement("input");
+  toDate.type = "date";
+
+  // Note
+  const note = document.createElement("input");
+  note.type = "text";
+  note.className = "holiday-note";
+  note.placeholder = currentLang === "en" ? "Reason (optional)" : "Motivo (opcional)";
+  note.dataset.placeholderEn = "Reason (optional)";
+  note.dataset.placeholderEs = "Motivo (opcional)";
+
+  // Remove button
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "slot-remove";
+  removeBtn.innerHTML = "&times;";
+  removeBtn.addEventListener("click", () => entry.remove());
+
+  entry.appendChild(fromLabel);
+  entry.appendChild(fromDate);
+  entry.appendChild(toLabel);
+  entry.appendChild(toDate);
+  entry.appendChild(note);
+  entry.appendChild(removeBtn);
+  wrap.appendChild(entry);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// FORM SHOW / RESET
+// ══════════════════════════════════════════════════════════════════════════
+
+function showForm() {
+  document.getElementById("pin-screen").classList.add("hidden");
+  document.getElementById("form-screen").classList.remove("hidden");
+  document.getElementById("feedback-screen").classList.add("hidden");
+  buildDayRows();
+  initCombobox();
+  switchLanguage(currentLang);
+}
+
+function resetForm() {
+  document.getElementById("feedback-screen").classList.add("hidden");
+  document.getElementById("form-screen").classList.remove("hidden");
+
+  // Clear form
+  selectedTeacher = "";
+  document.getElementById("teacher-input").value = "";
+  buildDayRows();
+  document.getElementById("urgent-entries").innerHTML = "";
+  document.getElementById("holiday-entries").innerHTML = "";
+  switchLanguage(currentLang);
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// COLLECT & SUBMIT
+// ══════════════════════════════════════════════════════════════════════════
+
+function collectData() {
+  // Teacher
+  if (!selectedTeacher) {
+    document.getElementById("teacher-error").classList.remove("hidden");
+    document.getElementById("teacher-input").focus();
+    return null;
+  }
+
+  // Same-as-before flags
+  const gapsSame = document.getElementById("gaps-same-toggle").checked;
+  const generalSame = document.getElementById("general-same-toggle").checked;
+
+  // General availability
+  let general = "no_change";
+  if (!generalSame) {
+    general = {};
+    DAYS.forEach(day => {
+      const toggle = document.getElementById("toggle-" + day.key);
+      if (!toggle.checked) {
+        general[day.key] = [];
+        return;
+      }
+      const slots = [];
+      const rows = document.querySelectorAll("#slots-" + day.key + " .slot-row");
+      rows.forEach(row => {
+        const selects = row.querySelectorAll("select");
+        const start = selects[0]?.value;
+        const end = selects[1]?.value;
+        if (start && end && start < end) {
+          slots.push(start + "-" + end);
+        }
+      });
+      general[day.key] = slots;
+    });
+  }
+
+  // Gaps in schedule
+  let urgent = "no_change";
+  if (!gapsSame) {
+    urgent = [];
+    document.querySelectorAll(".urgent-entry").forEach(entry => {
+      const daySel = entry.querySelector(".urgent-day-select");
+      const selects = entry.querySelectorAll("select:not(.urgent-day-select)");
+      const noteInput = entry.querySelector(".urgent-note");
+      const day = daySel?.value;
+      const start = selects[0]?.value;
+      const end = selects[1]?.value;
+      if (day && start && end && start < end) {
+        urgent.push({
+          day: day,
+          start: start,
+          end: end,
+          note: (noteInput?.value || "").trim()
+        });
+      }
+    });
+  }
+
+  // Holidays
+  const holidays = [];
+  document.querySelectorAll(".holiday-entry").forEach(entry => {
+    const dates = entry.querySelectorAll("input[type='date']");
+    const noteInput = entry.querySelector(".holiday-note");
+    const from = dates[0]?.value;
+    const to = dates[1]?.value;
+    if (from) {
+      holidays.push({
+        from: from,
+        to: to || from, // single day if no end date
+        note: (noteInput?.value || "").trim()
+      });
+    }
+  });
+
+  return { pin, teacher: selectedTeacher, general, urgent, holidays };
+}
+
+async function submitForm() {
+  const data = collectData();
+  if (!data) return;
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span>' +
+    (currentLang === "en" ? "Saving..." : "Guardando...");
+
+  // Preview mode: simulate success
+  if (IS_PREVIEW) {
+    console.log("Preview mode — form data:", JSON.stringify(data, null, 2));
+    await new Promise(r => setTimeout(r, 800)); // simulate network delay
+    showFeedback("success", new Date().toLocaleString());
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+    return;
+  }
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // Apps Script requires text/plain for CORS
+      body: JSON.stringify(data),
+    });
+    const result = await resp.json();
+
+    if (result.error) {
+      showFeedback("error", result.error);
+    } else {
+      showFeedback("success", result.timestamp);
+    }
+  } catch (e) {
+    showFeedback("error", e.message);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = origHTML;
+}
+
+function showFeedback(type, detail) {
+  document.getElementById("form-screen").classList.add("hidden");
+  document.getElementById("feedback-screen").classList.remove("hidden");
+
+  const card = document.getElementById("feedback-card");
+  const icon = document.getElementById("feedback-icon");
+  const title = document.getElementById("feedback-title");
+  const text = document.getElementById("feedback-text");
+  const btn = document.getElementById("feedback-btn");
+
+  card.className = "feedback-card " + type;
+
+  if (type === "success") {
+    icon.textContent = "\u2705";
+    title.textContent = currentLang === "en" ? "Saved!" : "\u00a1Guardado!";
+    text.textContent = currentLang === "en"
+      ? "Your availability has been updated. (" + detail + ")"
+      : "Tu disponibilidad ha sido actualizada. (" + detail + ")";
+    btn.textContent = currentLang === "en" ? "Submit Another" : "Enviar otra";
+  } else {
+    icon.textContent = "\u274c";
+    title.textContent = currentLang === "en" ? "Error" : "Error";
+    text.textContent = currentLang === "en"
+      ? "Something went wrong: " + detail
+      : "Algo sali\u00f3 mal: " + detail;
+    btn.textContent = currentLang === "en" ? "Try Again" : "Intentar de nuevo";
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════
+
+(function init() {
+  // Restore language
+  const savedLang = localStorage.getItem("shine-avail-lang");
+  if (savedLang === "en" || savedLang === "es") currentLang = savedLang;
+  switchLanguage(currentLang);
+
+  // Preview mode: skip PIN, use demo teachers
+  if (IS_PREVIEW) {
+    // Add preview banner
+    const banner = document.createElement("div");
+    banner.className = "preview-banner";
+    banner.textContent = "\u26a0 PREVIEW MODE — Apps Script URL not configured";
+    document.body.prepend(banner);
+
+    pin = "preview";
+    teachers = DEMO_TEACHERS;
+    showForm();
+    return;
+  }
+
+  // Check for cached PIN
+  const cachedPin = sessionStorage.getItem("shine-avail-pin");
+  if (cachedPin) {
+    // Try to validate the cached PIN by fetching teachers
+    pin = cachedPin;
+    fetch(APPS_SCRIPT_URL + "?action=teachers&pin=" + encodeURIComponent(cachedPin))
+      .then(r => r.json())
+      .then(data => {
+        if (data.teachers) {
+          teachers = data.teachers;
+          showForm();
+        }
+      })
+      .catch(() => {
+        // PIN expired or network error — show PIN screen
+      });
+  }
+})();
+</script>
+
+</body>
+</html>
