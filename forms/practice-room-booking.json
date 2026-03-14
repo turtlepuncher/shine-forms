@@ -191,6 +191,6 @@
   "payment": {
     "provider": "stripe",
     "currency": "EUR",
-    "checkout_endpoint": "https://script.google.com/macros/s/AKfycbyzXMMx59LsicKmJjHEW88st8KiPo5337gD2Y4wbmfZSfjgRY6wBgq6mFnO5Rv4kYvaNw/exec"
+    "checkout_endpoint": "https://shine-stripe-checkout.milos-sajin.workers.dev"
   }
 }

@@ -819,8 +819,8 @@ class ShineForm {
     }
   }
 
-  /** Redirect to Stripe Checkout via Apps Script backend */
-  _handleStripeCheckout(endpoint) {
+  /** Redirect to Stripe Checkout via serverless backend */
+  async _handleStripeCheckout(endpoint) {
     // Collect instrument quantities
     const instruments = {};
     for (const key of Object.keys(this.values)) {
@@ -854,19 +854,33 @@ class ShineForm {
       btn.style.opacity = '0.7';
     }
 
-    // Submit via hidden form POST (avoids CORS issues with Apps Script)
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = endpoint;
-    form.style.display = 'none';
+    try {
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await resp.json();
 
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
+      if (!resp.ok || !result.url) {
+        throw new Error(result.error || 'Payment service error');
+      }
 
-    document.body.appendChild(form);
-    form.submit();
+      // Redirect to Stripe Checkout
+      window.location.href = result.url;
+
+    } catch (err) {
+      // Restore button
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.originalText || 'Submit';
+        btn.style.opacity = '1';
+      }
+      alert(ShineI18n.t({
+        en: 'Could not connect to payment service. Please try again.',
+        es: 'No se pudo conectar al servicio de pago. Inténtalo de nuevo.'
+      }));
+      console.error('Checkout error:', err);
+    }
   }
 }
