@@ -597,18 +597,6 @@ textarea.sf-input {
   align-items: center;
   padding: 4px 0;
 }
-.sf-pricing-main {
-  padding: 8px 12px;
-  background: var(--shine-dark-teal);
-  color: var(--shine-white);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-.sf-pricing-main small {
-  font-weight: 400;
-  opacity: 0.8;
-}
 .sf-pricing-divider {
   height: 1px;
   background: var(--shine-grey);
@@ -624,9 +612,6 @@ textarea.sf-input {
 }
 .sf-pricing-accent {
   color: var(--shine-deep-orange);
-}
-.sf-pricing-good {
-  color: var(--shine-green);
 }
 .sf-pricing-terms {
   display: inline-block;
