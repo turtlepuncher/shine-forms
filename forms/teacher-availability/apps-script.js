@@ -20,6 +20,7 @@
  *
  * Endpoints:
  *   GET  ?action=teachers&pin=XXXX  → { teachers: [...] }
+ *   GET  ?action=current&teacher=NAME&pin=XXXX → { teacher, timestamp, general:{mon,...,sat}, urgent:{mon,...,sat}, holidays }
  *   POST { pin, teacher, general, urgent, holidays } → { status: "ok", row, timestamp }
  *
  * "Same as before" logic:
@@ -93,6 +94,53 @@ function doGet(e) {
     }
     teachers.sort();
     return jsonResponse_({ teachers: teachers });
+  }
+
+  if (action === "current") {
+    var teacherName = (params.teacher || "").trim();
+    if (!teacherName) {
+      return jsonResponse_({ error: "Teacher name is required" });
+    }
+
+    var emptyDays = { mon: "", tue: "", wed: "", thu: "", fri: "", sat: "" };
+    var empty = {
+      teacher: teacherName,
+      timestamp: "",
+      general: emptyDays,
+      urgent: { mon: "", tue: "", wed: "", thu: "", fri: "", sat: "" },
+      holidays: ""
+    };
+
+    var curSheet = getCurrentSheet_();
+    if (!curSheet) return jsonResponse_(empty);
+
+    var curData = curSheet.getDataRange().getValues();
+    var match = null;
+    // Header row is index 0; col A=Timestamp, col B=Teacher
+    for (var r = 1; r < curData.length; r++) {
+      if ((curData[r][1] || "").toString().trim() === teacherName) {
+        match = curData[r];
+        break;
+      }
+    }
+    if (!match) return jsonResponse_(empty);
+
+    // Columns: 0=Timestamp, 1=Teacher, 2-7=Mon..Sat General, 8-13=Mon..Sat Gaps, 14=Holidays
+    var dayKeys = ["mon", "tue", "wed", "thu", "fri", "sat"];
+    var general = {};
+    var urgent = {};
+    for (var d = 0; d < 6; d++) {
+      general[dayKeys[d]] = (match[2 + d] || "").toString();
+      urgent[dayKeys[d]] = (match[8 + d] || "").toString();
+    }
+
+    return jsonResponse_({
+      teacher: teacherName,
+      timestamp: (match[0] || "").toString(),
+      general: general,
+      urgent: urgent,
+      holidays: (match[14] || "").toString()
+    });
   }
 
   return jsonResponse_({ error: "Unknown action" });
