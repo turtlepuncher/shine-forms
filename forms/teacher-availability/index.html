@@ -1,4 +1,3 @@
-<!-- build bust 2026-05-08 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -969,23 +968,7 @@
     <!-- Section 1.5: Current schedule preview (read-only, populated when a teacher is picked) -->
     <div id="current-schedule" class="current-schedule hidden" aria-live="polite"></div>
 
-    <!-- Section 2: Gaps in Schedule -->
-    <div class="sf-section">
-      <div class="sf-section__title-row">
-        <div class="sf-section__title" data-en="Gaps in Your Schedule" data-es="Huecos en Tu Horario">Huecos en Tu Horario</div>
-        <label class="same-as-before-label">
-          <input type="checkbox" class="same-as-before-toggle" id="gaps-same-toggle" onchange="toggleSameAsBefore('gaps')">
-          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
-        </label>
-      </div>
-      <div class="sf-description" data-en="Time slots that need filling &mdash; for example, a student has left the school, leaving a gap in your schedule. These will be prioritized when matching new students." data-es="Huecos que necesitan llenarse &mdash; por ejemplo, un alumno ha dejado la escuela, dejando un hueco en tu horario. Se priorizar&aacute;n al asignar nuevos alumnos.">Huecos que necesitan llenarse &mdash; por ejemplo, un alumno ha dejado la escuela, dejando un hueco en tu horario. Se priorizar&aacute;n al asignar nuevos alumnos.</div>
-      <div id="gaps-content">
-        <div id="urgent-entries"></div>
-        <button type="button" class="add-urgent-btn" id="add-urgent-btn" data-en="+ Add gap" data-es="+ Agregar hueco" onclick="addUrgentEntry()">+ Agregar hueco</button>
-      </div>
-    </div>
-
-    <!-- Section 3: General Availability -->
+    <!-- Section 2: General Availability -->
     <div class="sf-section">
       <div class="sf-section__title-row">
         <div class="sf-section__title" data-en="General Availability" data-es="Disponibilidad General">Disponibilidad General</div>
@@ -994,9 +977,25 @@
           <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
         </label>
       </div>
-      <div class="sf-description" data-en="This is different from gaps above &mdash; here, set the days and time blocks when you're generally available to teach at Shine. You can add multiple time slots per day." data-es="Esto es diferente de los huecos de arriba &mdash; aqu&iacute;, indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.">Esto es diferente de los huecos de arriba &mdash; aqu&iacute;, indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.</div>
+      <div class="sf-description" data-en="Set the days and time blocks when you're generally available to teach at Shine. You can add multiple time slots per day." data-es="Indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.">Indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.</div>
       <div id="general-content">
         <div id="general-days"></div>
+      </div>
+    </div>
+
+    <!-- Section 3: Gaps in Schedule -->
+    <div class="sf-section">
+      <div class="sf-section__title-row">
+        <div class="sf-section__title" data-en="Gaps in Your Schedule" data-es="Huecos en Tu Horario">Huecos en Tu Horario</div>
+        <label class="same-as-before-label">
+          <input type="checkbox" class="same-as-before-toggle" id="gaps-same-toggle" onchange="toggleSameAsBefore('gaps')">
+          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
+        </label>
+      </div>
+      <div class="sf-description" data-en="Different from general availability above &mdash; these are time slots that need filling, e.g. a student has left and you have a gap. These will be prioritized when matching new students." data-es="Diferente de la disponibilidad general arriba &mdash; estos son huecos que necesitan llenarse, por ejemplo, un alumno ha dejado la escuela. Se priorizar&aacute;n al asignar nuevos alumnos.">Diferente de la disponibilidad general arriba &mdash; estos son huecos que necesitan llenarse, por ejemplo, un alumno ha dejado la escuela. Se priorizar&aacute;n al asignar nuevos alumnos.</div>
+      <div id="gaps-content">
+        <div id="urgent-entries"></div>
+        <button type="button" class="add-urgent-btn" id="add-urgent-btn" data-en="+ Add gap" data-es="+ Agregar hueco" onclick="addUrgentEntry()">+ Agregar hueco</button>
       </div>
     </div>
 
