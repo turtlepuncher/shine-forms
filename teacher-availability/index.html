@@ -528,8 +528,25 @@
     }
     .current-schedule__bar {
       position: relative;
-      height: 28px;
-      background: #EEF3F4;
+      height: 32px;
+      /* Hour gridlines: every 1h faint (~0.06), every 2h stronger (~0.14).
+         14 hours total (08→22), so each hour = 100% / 14. */
+      background:
+        repeating-linear-gradient(
+          to right,
+          transparent 0,
+          transparent calc((100% / 7) - 1px),
+          rgba(15, 76, 92, 0.18) calc((100% / 7) - 1px),
+          rgba(15, 76, 92, 0.18) calc(100% / 7)
+        ),
+        repeating-linear-gradient(
+          to right,
+          transparent 0,
+          transparent calc((100% / 14) - 1px),
+          rgba(15, 76, 92, 0.08) calc((100% / 14) - 1px),
+          rgba(15, 76, 92, 0.08) calc(100% / 14)
+        ),
+        #EEF3F4;
       border-radius: 6px;
       overflow: hidden;
     }
@@ -563,8 +580,9 @@
       grid-column: 2;
       display: flex;
       justify-content: space-between;
-      font-size: 10px;
-      color: var(--tx-placeholder);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tx-secondary);
       font-variant-numeric: tabular-nums;
       margin-top: 2px;
       padding: 0 2px;
@@ -1454,9 +1472,10 @@ function renderCurrentSchedule(data) {
     `;
   }).join("");
 
-  // Tick labels for the time axis (one set, shown after the last day)
-  const tickHtml = `
-    <div class="current-schedule__day" style="border-top: none; padding-top: 0;">
+  // Tick labels for the time axis — shown above day 1 AND below the last day,
+  // so the time scale brackets the calendar instead of sitting only at the bottom.
+  const tickRowHtml = `
+    <div class="current-schedule__day" style="border-top: none; padding-top: 0; padding-bottom: 0;">
       <div></div>
       <div class="current-schedule__ticks">
         <span>08</span><span>10</span><span>12</span><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span>
@@ -1485,8 +1504,9 @@ function renderCurrentSchedule(data) {
         ${currentLang === "en" ? "Gap (urgent)" : "Hueco (urgente)"}
       </span>
     </div>
+    ${tickRowHtml}
     ${dayRowsHtml}
-    ${tickHtml}
+    ${tickRowHtml}
   `;
 }
 
