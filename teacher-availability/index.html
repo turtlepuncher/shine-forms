@@ -548,7 +548,10 @@
         ),
         #EEF3F4;
       border-radius: 6px;
-      overflow: hidden;
+      /* No overflow: hidden — would clip the floating drag tooltip that
+         sits above the bar. Segments inside the bar use their own
+         border-radius and percent-based widths, so they never exceed the
+         bar's bounds anyway. */
     }
     .current-schedule__segment {
       position: absolute;
