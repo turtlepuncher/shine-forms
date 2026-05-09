@@ -598,6 +598,120 @@
       line-height: 1.4;
     }
 
+    /* ── Editor mode — appended in Phase B ── */
+    .editor-mode-row {
+      display: flex;
+      gap: 8px;
+      margin: var(--space-md) 0 var(--space-sm);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .editor-mode-row__label {
+      font-size: var(--font-size-xs);
+      color: var(--tx-secondary);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .editor-mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      min-height: 36px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background: var(--sf-bg);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    .editor-mode-pill__swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .editor-mode-pill--general .editor-mode-pill__swatch { background: var(--shine-green); }
+    .editor-mode-pill--urgent  .editor-mode-pill__swatch { background: var(--shine-orange); }
+    .editor-mode-pill[aria-pressed="true"] {
+      background: white;
+      border-color: var(--shine-dark-teal);
+      box-shadow: var(--shadow-sm);
+    }
+    .editor-mode-pill--general[aria-pressed="true"] { border-color: var(--shine-green); }
+    .editor-mode-pill--urgent[aria-pressed="true"]  { border-color: var(--shine-orange); }
+
+    /* The bar itself, when in editor mode, gets paint affordance */
+    .current-schedule__bar--editable {
+      cursor: crosshair;
+      touch-action: none;  /* prevent page scroll while dragging */
+    }
+    .current-schedule__bar--editable.is-painting-urgent {
+      cursor: copy;
+    }
+    /* Drag preview — semi-transparent ghost segment shown while painting */
+    .current-schedule__preview {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      border-radius: 4px;
+      opacity: 0.55;
+      pointer-events: none;
+      border: 2px dashed rgba(0, 0, 0, 0.35);
+      box-sizing: border-box;
+    }
+    .current-schedule__preview--general { background: var(--shine-green); }
+    .current-schedule__preview--urgent  { background: var(--shine-orange); }
+
+    /* Per-day "clear day" button — small unobtrusive trash icon */
+    .day-clear-btn {
+      grid-column: 2;
+      justify-self: end;
+      background: transparent;
+      border: none;
+      color: var(--tx-placeholder);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: -2px;
+    }
+    .day-clear-btn:hover { background: var(--sf-bg); color: var(--tx-error); }
+
+    /* Per-day note input for gaps */
+    .day-gap-note {
+      grid-column: 2;
+      width: 100%;
+      margin-top: 4px;
+      padding: 6px 10px;
+      font-size: var(--font-size-xs);
+      border: 1px solid var(--sf-border);
+      border-radius: 4px;
+      background: var(--sf-card);
+      color: var(--tx-primary);
+      box-sizing: border-box;
+    }
+    .day-gap-note::placeholder { color: var(--tx-placeholder); }
+    .day-gap-note:focus {
+      outline: none;
+      border-color: var(--shine-orange);
+      box-shadow: 0 0 0 2px rgba(255, 140, 60, 0.15);
+    }
+
+    /* When a day is locked (no_change auto-detected), the bar gets a subtle wash */
+    .current-schedule__day--locked .current-schedule__bar {
+      opacity: 0.85;
+    }
+
+    /* Tap targets on the bar should be fingertip-sized on mobile */
+    @media (max-width: 640px) {
+      .current-schedule__bar { height: 40px; }
+      .editor-mode-pill { min-height: 44px; padding: 10px 16px; }
+    }
+
     /* ── Day Rows ── */
     .day-row {
       margin-bottom: var(--space-md);
@@ -986,36 +1100,10 @@
     <!-- Section 1.5: Current schedule preview (read-only, populated when a teacher is picked) -->
     <div id="current-schedule" class="current-schedule hidden" aria-live="polite"></div>
 
-    <!-- Section 2: General Availability -->
-    <div class="sf-section">
-      <div class="sf-section__title-row">
-        <div class="sf-section__title" data-en="General Availability" data-es="Disponibilidad General">Disponibilidad General</div>
-        <label class="same-as-before-label">
-          <input type="checkbox" class="same-as-before-toggle" id="general-same-toggle" onchange="toggleSameAsBefore('general')">
-          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
-        </label>
-      </div>
-      <div class="sf-description" data-en="Set the days and time blocks when you're generally available to teach at Shine. You can add multiple time slots per day." data-es="Indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.">Indica los d&iacute;as y bloques de horas en los que est&aacute;s disponible para dar clases en Shine en general. Puedes agregar m&uacute;ltiples franjas horarias por d&iacute;a.</div>
-      <div id="general-content">
-        <div id="general-days"></div>
-      </div>
-    </div>
-
-    <!-- Section 3: Gaps in Schedule -->
-    <div class="sf-section">
-      <div class="sf-section__title-row">
-        <div class="sf-section__title" data-en="Gaps in Your Schedule" data-es="Huecos en Tu Horario">Huecos en Tu Horario</div>
-        <label class="same-as-before-label">
-          <input type="checkbox" class="same-as-before-toggle" id="gaps-same-toggle" onchange="toggleSameAsBefore('gaps')">
-          <span data-en="No changes" data-es="Sin cambios">Sin cambios</span>
-        </label>
-      </div>
-      <div class="sf-description" data-en="Different from general availability above &mdash; these are time slots that need filling, e.g. a student has left and you have a gap. These will be prioritized when matching new students." data-es="Diferente de la disponibilidad general arriba &mdash; estos son huecos que necesitan llenarse, por ejemplo, un alumno ha dejado la escuela. Se priorizar&aacute;n al asignar nuevos alumnos.">Diferente de la disponibilidad general arriba &mdash; estos son huecos que necesitan llenarse, por ejemplo, un alumno ha dejado la escuela. Se priorizar&aacute;n al asignar nuevos alumnos.</div>
-      <div id="gaps-content">
-        <div id="urgent-entries"></div>
-        <button type="button" class="add-urgent-btn" id="add-urgent-btn" data-en="+ Add gap" data-es="+ Agregar hueco" onclick="addUrgentEntry()">+ Agregar hueco</button>
-      </div>
-    </div>
+    <!-- Sections 2 + 3 (General Availability + Schedule Gaps) folded into the
+         calendar editor above. Edits happen by tapping/dragging directly on
+         each day's bar; mode toggle switches between general-availability
+         (green) and gap (orange) painting. -->
 
     <!-- Section 4: Holidays / Vacaciones -->
     <div class="sf-section holidays-section">
@@ -1157,9 +1245,11 @@ function switchLanguage(lang) {
   // Update document lang
   document.documentElement.lang = lang;
 
-  // Re-render visual schedule preview if a teacher's data is currently loaded
-  if (currentScheduleData) {
-    renderCurrentSchedule(currentScheduleData);
+  // Re-render schedule editor in the new language WITHOUT re-hydrating from
+  // the loaded data — if the user has painted unsaved changes, calling
+  // renderCurrentSchedule() with no args preserves them.
+  if (editorState) {
+    renderCurrentSchedule();
   }
 }
 
@@ -1310,41 +1400,79 @@ function initCombobox() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// CURRENT SCHEDULE PREVIEW (Phase A — read-only visual calendar)
+// SCHEDULE EDITOR (Phase B — interactive paint-on-calendar)
+//
+// One calendar that both shows the saved schedule AND lets you edit it.
+// Tap or drag on a day's bar to paint the active mode (green = general
+// availability, orange = gap). Tap an existing same-mode segment to clear
+// it. Days you don't touch keep their saved values via implicit per-day
+// no_change diff at submit time. Per-day note input appears below the bar
+// when that day has gaps.
 // ══════════════════════════════════════════════════════════════════════════
 
 // Schedule grid covers 08:00–22:00 (14 hours).
 const SCHEDULE_HOUR_START = 8;
 const SCHEDULE_HOUR_END = 22;
 const SCHEDULE_HOUR_SPAN = SCHEDULE_HOUR_END - SCHEDULE_HOUR_START;
+const SCHEDULE_HOUR_SPAN_MIN = SCHEDULE_HOUR_SPAN * 60;
+const SLOT_GRANULARITY_MIN = 15;
 
-// Last loaded teacher name + a request token so a slow earlier fetch can't
-// overwrite a newer one (race guard).
+const ALL_DAYS = ["mon", "tue", "wed", "thu", "fri", "sat"];
+const DAY_LABELS = {
+  mon: { en: "Mon", es: "Lun" },
+  tue: { en: "Tue", es: "Mar" },
+  wed: { en: "Wed", es: "Mié" },
+  thu: { en: "Thu", es: "Jue" },
+  fri: { en: "Fri", es: "Vie" },
+  sat: { en: "Sat", es: "Sáb" },
+};
+
+// Race guard: a stale fetch can't overwrite a newer one
 let currentScheduleToken = 0;
-// Cache the most recently rendered data so we can re-render on language toggle
-// without a network round-trip.
+// Raw loaded data from the server (general/urgent strings, holidays string)
 let currentScheduleData = null;
+// Mutable per-day editor state — { general: {day: [{start,end}]}, urgent: {day: [{start,end,note}]} }
+let editorState = null;
+// Immutable snapshot of editorState at load time, for per-day no_change diff at submit
+let originalState = null;
+// Active paint mode
+let currentEditorMode = "general"; // "general" | "urgent"
+// Active drag session — null when not painting
+let dragSession = null;
 
-function timeStringToFraction(t) {
-  // "15:30" -> 0..1 across the 08:00–22:00 window. Returns null if unparseable.
+// === Time helpers ===
+function timeStringToMinutes(t) {
   if (!t) return null;
-  const m = /^(\d{1,2}):(\d{2})$/.exec(t.trim());
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(t).trim());
   if (!m) return null;
-  const h = parseInt(m[1], 10);
-  const min = parseInt(m[2], 10);
-  if (Number.isNaN(h) || Number.isNaN(min)) return null;
-  const decimal = h + (min / 60);
-  return Math.max(0, Math.min(1, (decimal - SCHEDULE_HOUR_START) / SCHEDULE_HOUR_SPAN));
+  return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+}
+function minutesToTimeString(min) {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+function minutesToFraction(min) {
+  return Math.max(0, Math.min(1, (min - SCHEDULE_HOUR_START * 60) / SCHEDULE_HOUR_SPAN_MIN));
+}
+function timeStringToFraction(t) {
+  const m = timeStringToMinutes(t);
+  return m === null ? null : minutesToFraction(m);
+}
+function snapMinutes(min) {
+  return Math.round(min / SLOT_GRANULARITY_MIN) * SLOT_GRANULARITY_MIN;
+}
+function clampToBar(min) {
+  return Math.max(SCHEDULE_HOUR_START * 60, Math.min(SCHEDULE_HOUR_END * 60, min));
 }
 
 function parseSlotString(raw) {
-  // Parses "15:00-17:00 | 18:00-20:00 (urgent)" into [{start, end, note}]
+  // Parses "15:00-17:00 | 18:00-20:00 (urgent)" into [{start, end, note}].
   // Treats "(no change)" and empty/whitespace as no slots.
   if (!raw) return [];
   const trimmed = String(raw).trim();
   if (!trimmed || trimmed === "(no change)") return [];
   return trimmed.split("|").map(p => p.trim()).filter(Boolean).map(piece => {
-    // Trailing "(note)" is optional
     const noteMatch = piece.match(/\(([^)]*)\)\s*$/);
     const note = noteMatch ? noteMatch[1].trim() : "";
     const range = noteMatch ? piece.replace(noteMatch[0], "").trim() : piece;
@@ -1357,12 +1485,39 @@ function parseSlotString(raw) {
   }).filter(Boolean);
 }
 
+function escapeAttr(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+                  .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// === Editor state init ===
+function loadDataIntoEditorState(data) {
+  currentScheduleData = data;
+  const general = data.general || {};
+  const urgent = data.urgent || {};
+  editorState = { general: {}, urgent: {} };
+  ALL_DAYS.forEach(d => {
+    editorState.general[d] = parseSlotString(general[d] || "")
+      .map(s => ({ start: s.start, end: s.end }));
+    editorState.urgent[d] = parseSlotString(urgent[d] || "")
+      .map(s => ({ start: s.start, end: s.end, note: s.note || "" }));
+  });
+  // Deep-clone snapshot for the no_change diff at submit time
+  originalState = {
+    general: JSON.parse(JSON.stringify(editorState.general)),
+    urgent: JSON.parse(JSON.stringify(editorState.urgent)),
+  };
+}
+
 function clearCurrentSchedule() {
   const el = document.getElementById("current-schedule");
   if (!el) return;
   el.classList.add("hidden");
   el.innerHTML = "";
   currentScheduleData = null;
+  editorState = null;
+  originalState = null;
+  dragSession = null;
 }
 
 function showCurrentScheduleState(stateClass, message) {
@@ -1379,35 +1534,99 @@ function showCurrentScheduleState(stateClass, message) {
   `;
 }
 
+// === Slot operations ===
+function mergeSlots(slots) {
+  if (slots.length === 0) return [];
+  const sorted = slots.slice().sort((a, b) =>
+    timeStringToMinutes(a.start) - timeStringToMinutes(b.start));
+  const out = [{ ...sorted[0] }];
+  for (let i = 1; i < sorted.length; i++) {
+    const last = out[out.length - 1];
+    const cur = sorted[i];
+    const lastEnd = timeStringToMinutes(last.end);
+    const curStart = timeStringToMinutes(cur.start);
+    const curEnd = timeStringToMinutes(cur.end);
+    if (curStart <= lastEnd) {
+      if (curEnd > lastEnd) last.end = cur.end;
+      // keep last.note (note from earliest slot)
+    } else {
+      out.push({ ...cur });
+    }
+  }
+  return out;
+}
+
+function addSlotToDay(slots, startMin, endMin, note) {
+  if (endMin <= startMin) return slots;
+  const newSlot = {
+    start: minutesToTimeString(startMin),
+    end: minutesToTimeString(endMin),
+  };
+  if (note !== undefined) newSlot.note = note;
+  return mergeSlots([...slots, newSlot]);
+}
+
+function subtractRange(slots, removeStart, removeEnd) {
+  const out = [];
+  slots.forEach(s => {
+    const sStart = timeStringToMinutes(s.start);
+    const sEnd = timeStringToMinutes(s.end);
+    if (removeEnd <= sStart || removeStart >= sEnd) {
+      out.push({ ...s });
+    } else if (removeStart <= sStart && removeEnd >= sEnd) {
+      // fully consumed → drop
+    } else if (removeStart > sStart && removeEnd < sEnd) {
+      out.push({ ...s, end: minutesToTimeString(removeStart) });
+      out.push({ ...s, start: minutesToTimeString(removeEnd) });
+    } else if (removeStart <= sStart) {
+      out.push({ ...s, start: minutesToTimeString(removeEnd) });
+    } else {
+      out.push({ ...s, end: minutesToTimeString(removeStart) });
+    }
+  });
+  return out;
+}
+
+function findHitSlot(slots, atMin) {
+  return slots.find(s => {
+    const a = timeStringToMinutes(s.start);
+    const b = timeStringToMinutes(s.end);
+    return atMin >= a && atMin < b;
+  });
+}
+
+function isRangeCovered(slots, startMin, endMin) {
+  const sorted = slots.slice().sort((a, b) =>
+    timeStringToMinutes(a.start) - timeStringToMinutes(b.start));
+  let cursor = startMin;
+  for (const s of sorted) {
+    const a = timeStringToMinutes(s.start);
+    const b = timeStringToMinutes(s.end);
+    if (a <= cursor) {
+      if (b > cursor) cursor = b;
+    } else if (a > cursor) {
+      return false;
+    }
+    if (cursor >= endMin) return true;
+  }
+  return cursor >= endMin;
+}
+
 function renderCurrentSchedule(data) {
+  // If a fresh data payload is supplied, hydrate editorState from it.
+  // Subsequent re-renders (after a paint, after a language toggle) call
+  // renderCurrentSchedule() with no args, so the user's in-progress paints
+  // are preserved.
+  if (data) loadDataIntoEditorState(data);
+  if (!editorState) return;
+
   const el = document.getElementById("current-schedule");
   if (!el) return;
-  currentScheduleData = data;
 
-  const general = data.general || {};
-  const urgent = data.urgent || {};
-
-  // Detect "no schedule yet" — every day empty across both general + gaps
-  const allDayKeys = ["mon", "tue", "wed", "thu", "fri", "sat"];
-  const everythingEmpty = allDayKeys.every(d =>
-    parseSlotString(general[d] || "").length === 0 &&
-    parseSlotString(urgent[d] || "").length === 0
-  );
-
-  if (everythingEmpty) {
-    showCurrentScheduleState(
-      "current-schedule__empty",
-      currentLang === "en"
-        ? "No saved schedule yet. Fill in the sections below — what you submit becomes your starting point next time."
-        : "Aún no tienes horario guardado. Rellena las secciones de abajo — lo que envíes será tu punto de partida la próxima vez."
-    );
-    return;
-  }
-
-  // Format timestamp for display ("2026-05-08 13:42:11" → "8 May 13:42")
+  // Format timestamp ("2026-05-08 13:42:11" → "8 May 13:42")
   let tsLabel = "";
-  if (data.timestamp) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/.exec(data.timestamp);
+  if (currentScheduleData && currentScheduleData.timestamp) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/.exec(currentScheduleData.timestamp);
     if (m) {
       const dayNum = parseInt(m[3], 10);
       const monthIdx = parseInt(m[2], 10) - 1;
@@ -1420,60 +1639,45 @@ function renderCurrentSchedule(data) {
     }
   }
 
-  const dayLabels = {
-    mon: { en: "Mon", es: "Lun" },
-    tue: { en: "Tue", es: "Mar" },
-    wed: { en: "Wed", es: "Mié" },
-    thu: { en: "Thu", es: "Jue" },
-    fri: { en: "Fri", es: "Vie" },
-    sat: { en: "Sat", es: "Sáb" },
-  };
+  // Build day rows from editorState (the editable source of truth)
+  const dayRowsHtml = ALL_DAYS.map(day => {
+    const generalSlots = editorState.general[day] || [];
+    const urgentSlots = editorState.urgent[day] || [];
+    const hasAny = generalSlots.length > 0 || urgentSlots.length > 0;
 
-  // Build day rows
-  const dayRowsHtml = allDayKeys.map(day => {
-    const generalSlots = parseSlotString(general[day] || "");
-    const urgentSlots = parseSlotString(urgent[day] || "");
-    const allSlots = generalSlots.length === 0 && urgentSlots.length === 0;
-
-    // Render segments with absolute positioning
     const segmentsHtml = [
-      ...generalSlots.map(s => buildSegmentHtml(s, "general")),
-      ...urgentSlots.map(s => buildSegmentHtml(s, "urgent")),
+      ...generalSlots.map(s => buildSegmentHtml(s, "general", day)),
+      ...urgentSlots.map(s => buildSegmentHtml(s, "urgent", day)),
     ].filter(Boolean).join("");
 
-    // Render text summary below the bar
-    let textHtml;
-    if (allSlots) {
-      textHtml = `<div class="current-schedule__day-text current-schedule__day-text--empty">${
-        currentLang === "en" ? "no availability" : "sin disponibilidad"
-      }</div>`;
-    } else {
-      const generalLabel = currentLang === "en" ? "Available" : "Disponible";
-      const urgentLabel = currentLang === "en" ? "Gap" : "Hueco";
-      const parts = [];
-      if (generalSlots.length) {
-        parts.push(`<strong style="color: var(--shine-dark-teal);">${generalLabel}:</strong> ${generalSlots.map(s => `${s.start}–${s.end}`).join(", ")}`);
-      }
-      if (urgentSlots.length) {
-        parts.push(`<strong style="color: var(--shine-deep-orange);">${urgentLabel}:</strong> ${urgentSlots.map(s => {
-          const range = `${s.start}–${s.end}`;
-          return s.note ? `${range} (${s.note})` : range;
-        }).join(", ")}`);
-      }
-      textHtml = `<div class="current-schedule__day-text">${parts.join(" · ")}</div>`;
-    }
+    // Per-day note input — visible only when the day has gaps. All gap slots
+    // for that day share one note (rare to need different notes per gap).
+    const dayNote = urgentSlots.length > 0 ? (urgentSlots[0].note || "") : "";
+    const noteInputHtml = urgentSlots.length > 0
+      ? `<input type="text" class="day-gap-note" data-day="${day}"
+          placeholder="${currentLang === 'en' ? 'Note for this day&apos;s gap (optional)' : 'Nota para el hueco de este día (opcional)'}"
+          value="${escapeAttr(dayNote)}">`
+      : "";
+
+    // Clear-day button (current mode only) — visible when the day has slots in that mode
+    const slotsInActiveMode = currentEditorMode === "general" ? generalSlots : urgentSlots;
+    const clearBtnHtml = slotsInActiveMode.length > 0
+      ? `<button type="button" class="day-clear-btn" data-day="${day}" title="${
+          currentLang === 'en' ? 'Clear this day in current paint mode' : 'Borrar este día en el modo activo'
+        }">${currentLang === 'en' ? 'Clear' : 'Borrar'}</button>`
+      : "";
 
     return `
       <div class="current-schedule__day">
-        <div class="current-schedule__day-label">${dayLabels[day][currentLang]}</div>
-        <div class="current-schedule__bar">${segmentsHtml}</div>
-        ${textHtml}
+        <div class="current-schedule__day-label">${DAY_LABELS[day][currentLang]}</div>
+        <div class="current-schedule__bar current-schedule__bar--editable" data-day="${day}">${segmentsHtml}</div>
+        ${noteInputHtml}
+        ${clearBtnHtml}
       </div>
     `;
   }).join("");
 
-  // Tick labels for the time axis — shown above day 1 AND below the last day,
-  // so the time scale brackets the calendar instead of sitting only at the bottom.
+  // Tick labels bracket the calendar
   const tickRowHtml = `
     <div class="current-schedule__day" style="border-top: none; padding-top: 0; padding-bottom: 0;">
       <div></div>
@@ -1483,34 +1687,52 @@ function renderCurrentSchedule(data) {
     </div>
   `;
 
+  // Mode toggle row
+  const modeRowHtml = `
+    <div class="editor-mode-row">
+      <span class="editor-mode-row__label">${currentLang === 'en' ? 'Paint:' : 'Pintar:'}</span>
+      <button type="button" class="editor-mode-pill editor-mode-pill--general" aria-pressed="${currentEditorMode === 'general'}" data-mode="general">
+        <span class="editor-mode-pill__swatch"></span>
+        <span>${currentLang === 'en' ? 'Available' : 'Disponible'}</span>
+      </button>
+      <button type="button" class="editor-mode-pill editor-mode-pill--urgent" aria-pressed="${currentEditorMode === 'urgent'}" data-mode="urgent">
+        <span class="editor-mode-pill__swatch"></span>
+        <span>${currentLang === 'en' ? 'Gap' : 'Hueco'}</span>
+      </button>
+    </div>
+  `;
+
   el.classList.remove("hidden");
   el.innerHTML = `
     <div class="current-schedule__heading">
-      <div class="current-schedule__title">${currentLang === "en" ? "Your general availability" : "Tu disponibilidad general"}</div>
-      ${tsLabel ? `<div class="current-schedule__timestamp">${tsLabel}</div>` : ""}
+      <div class="current-schedule__title">${currentLang === 'en' ? 'Your general availability' : 'Tu disponibilidad general'}</div>
+      ${tsLabel ? `<div class="current-schedule__timestamp">${tsLabel}</div>` : ''}
     </div>
     <div class="current-schedule__subtitle">${
-      currentLang === "en"
-        ? "These are the days and time blocks when you're generally available to teach at Shine — what we currently have on file. Use the sections below to update, or leave a section as “No changes” to keep it the same."
-        : "Estos son los días y bloques de horas en los que estás disponible para dar clases en Shine en general — lo que tenemos guardado. Usa las secciones de abajo para actualizar, o deja una sección como “Sin cambios” para conservarla igual."
+      currentLang === 'en'
+        ? "Set the days and time blocks when you're generally available to teach at Shine. Tap or drag on a day to paint. Switch to Gap mode to mark exceptions (e.g. a recent student left). Days you don't touch keep their saved values."
+        : "Indica los días y bloques de horas en los que estás disponible para dar clases en Shine en general. Toca o arrastra sobre un día para pintar. Cambia al modo Hueco para marcar excepciones (p. ej. un alumno acaba de irse). Los días que no toques conservan los valores guardados."
     }</div>
     <div class="current-schedule__legend">
       <span class="current-schedule__legend-item">
         <span class="current-schedule__swatch current-schedule__swatch--general"></span>
-        ${currentLang === "en" ? "General availability" : "Disponibilidad general"}
+        ${currentLang === 'en' ? 'General availability' : 'Disponibilidad general'}
       </span>
       <span class="current-schedule__legend-item">
         <span class="current-schedule__swatch current-schedule__swatch--urgent"></span>
-        ${currentLang === "en" ? "Gap (urgent)" : "Hueco (urgente)"}
+        ${currentLang === 'en' ? 'Gap (urgent)' : 'Hueco (urgente)'}
       </span>
     </div>
+    ${modeRowHtml}
     ${tickRowHtml}
     ${dayRowsHtml}
     ${tickRowHtml}
   `;
+
+  attachEditorHandlers(el);
 }
 
-function buildSegmentHtml(slot, kind) {
+function buildSegmentHtml(slot, kind, day) {
   const startFrac = timeStringToFraction(slot.start);
   const endFrac = timeStringToFraction(slot.end);
   if (startFrac === null || endFrac === null) return "";
@@ -1518,7 +1740,141 @@ function buildSegmentHtml(slot, kind) {
   const width = Math.max(0, Math.abs(endFrac - startFrac) * 100);
   if (width <= 0) return "";
   const title = `${slot.start}–${slot.end}${slot.note ? " (" + slot.note + ")" : ""}`;
-  return `<div class="current-schedule__segment current-schedule__segment--${kind}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${title}"></div>`;
+  const dayAttr = day ? ` data-day="${day}"` : "";
+  return `<div class="current-schedule__segment current-schedule__segment--${kind}"${dayAttr} data-kind="${kind}" data-start="${slot.start}" data-end="${slot.end}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${escapeAttr(title)}"></div>`;
+}
+
+// === Event wiring ===
+function attachEditorHandlers(rootEl) {
+  rootEl.querySelectorAll(".editor-mode-pill").forEach(btn => {
+    btn.addEventListener("click", () => setEditorMode(btn.dataset.mode));
+  });
+  rootEl.querySelectorAll(".day-clear-btn").forEach(btn => {
+    btn.addEventListener("click", () => clearDayInMode(btn.dataset.day, currentEditorMode));
+  });
+  rootEl.querySelectorAll(".day-gap-note").forEach(inp => {
+    inp.addEventListener("input", () => setDayGapNote(inp.dataset.day, inp.value));
+  });
+  rootEl.querySelectorAll(".current-schedule__bar--editable").forEach(bar => {
+    bar.addEventListener("mousedown", onPaintStart);
+    bar.addEventListener("touchstart", onPaintStart, { passive: false });
+  });
+}
+
+function setEditorMode(mode) {
+  if (mode !== "general" && mode !== "urgent") return;
+  currentEditorMode = mode;
+  renderCurrentSchedule();
+}
+
+// === Paint event handlers ===
+function eventClientX(e) {
+  if (e.touches && e.touches.length) return e.touches[0].clientX;
+  if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
+  return e.clientX;
+}
+function barElementToMinutes(barEl, clientX) {
+  const rect = barEl.getBoundingClientRect();
+  const frac = (clientX - rect.left) / rect.width;
+  const raw = SCHEDULE_HOUR_START * 60 + frac * SCHEDULE_HOUR_SPAN_MIN;
+  return clampToBar(snapMinutes(raw));
+}
+
+function onPaintStart(e) {
+  if (e.touches) e.preventDefault();
+  const barEl = e.currentTarget;
+  const day = barEl.dataset.day;
+  const startMin = barElementToMinutes(barEl, eventClientX(e));
+  const previewEl = document.createElement("div");
+  previewEl.className = `current-schedule__preview current-schedule__preview--${currentEditorMode}`;
+  barEl.appendChild(previewEl);
+  dragSession = { day, mode: currentEditorMode, startMin, currentEndMin: startMin, barEl, previewEl };
+  updatePreview();
+  document.addEventListener("mousemove", onPaintMove);
+  document.addEventListener("mouseup", onPaintEnd);
+  document.addEventListener("touchmove", onPaintMove, { passive: false });
+  document.addEventListener("touchend", onPaintEnd);
+}
+
+function onPaintMove(e) {
+  if (!dragSession) return;
+  if (e.touches) e.preventDefault();
+  dragSession.currentEndMin = barElementToMinutes(dragSession.barEl, eventClientX(e));
+  updatePreview();
+}
+
+function onPaintEnd() {
+  if (!dragSession) return;
+  document.removeEventListener("mousemove", onPaintMove);
+  document.removeEventListener("mouseup", onPaintEnd);
+  document.removeEventListener("touchmove", onPaintMove);
+  document.removeEventListener("touchend", onPaintEnd);
+
+  const { day, mode, startMin, currentEndMin, previewEl } = dragSession;
+  if (previewEl && previewEl.parentNode) previewEl.parentNode.removeChild(previewEl);
+  const lo = Math.min(startMin, currentEndMin);
+  const hi = Math.max(startMin, currentEndMin);
+  const wasDrag = (hi - lo) >= SLOT_GRANULARITY_MIN;
+  dragSession = null;
+
+  if (!wasDrag) {
+    handleTap(day, mode, startMin);
+  } else {
+    handlePaint(day, mode, lo, hi);
+  }
+  renderCurrentSchedule();
+}
+
+function updatePreview() {
+  if (!dragSession) return;
+  const lo = Math.min(dragSession.startMin, dragSession.currentEndMin);
+  const hi = Math.max(dragSession.startMin, dragSession.currentEndMin);
+  const left = minutesToFraction(lo) * 100;
+  const width = (minutesToFraction(hi) - minutesToFraction(lo)) * 100;
+  dragSession.previewEl.style.left = left.toFixed(2) + "%";
+  dragSession.previewEl.style.width = width.toFixed(2) + "%";
+}
+
+// === Mutations on editorState ===
+function handleTap(day, mode, atMin) {
+  if (!editorState) return;
+  const slots = editorState[mode][day];
+  const hit = findHitSlot(slots, atMin);
+  if (hit) {
+    editorState[mode][day] = slots.filter(s => s !== hit);
+  } else {
+    // Default to a 30-minute slot at the tapped point
+    const newEnd = clampToBar(atMin + 30);
+    const note = mode === "urgent" ? (slots.length > 0 ? (slots[0].note || "") : "") : undefined;
+    editorState[mode][day] = addSlotToDay(slots, atMin, newEnd, note);
+  }
+}
+
+function handlePaint(day, mode, startMin, endMin) {
+  if (!editorState) return;
+  const slots = editorState[mode][day];
+  // If the painted range is fully inside existing same-mode coverage, treat as
+  // "subtract" — drag-clearing a section. Otherwise, add the new range.
+  if (isRangeCovered(slots, startMin, endMin)) {
+    editorState[mode][day] = subtractRange(slots, startMin, endMin);
+  } else {
+    const note = mode === "urgent" ? (slots.length > 0 ? (slots[0].note || "") : "") : undefined;
+    editorState[mode][day] = addSlotToDay(slots, startMin, endMin, note);
+  }
+}
+
+function clearDayInMode(day, mode) {
+  if (!editorState) return;
+  editorState[mode][day] = [];
+  renderCurrentSchedule();
+}
+
+function setDayGapNote(day, note) {
+  if (!editorState) return;
+  const trimmed = (note || "").trim();
+  // All gap slots for this day share the same note
+  editorState.urgent[day] = editorState.urgent[day].map(s => ({ ...s, note: trimmed }));
+  // No re-render — we'd unfocus the input; the data is captured for submit
 }
 
 async function loadCurrentSchedule(teacherName) {
@@ -1592,179 +1948,6 @@ async function loadCurrentSchedule(teacherName) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SAME-AS-BEFORE TOGGLE
-// ══════════════════════════════════════════════════════════════════════════
-
-function toggleSameAsBefore(section) {
-  if (section === "gaps") {
-    const checked = document.getElementById("gaps-same-toggle").checked;
-    const content = document.getElementById("gaps-content");
-    content.classList.toggle("section-collapsed", checked);
-  } else if (section === "general") {
-    const checked = document.getElementById("general-same-toggle").checked;
-    const content = document.getElementById("general-content");
-    content.classList.toggle("section-collapsed", checked);
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// GENERAL AVAILABILITY
-// ══════════════════════════════════════════════════════════════════════════
-
-function buildTimeSelect(selectedValue) {
-  const sel = document.createElement("select");
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = "--:--";
-  sel.appendChild(placeholder);
-  TIMES.forEach(t => {
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-    if (t === selectedValue) opt.selected = true;
-    sel.appendChild(opt);
-  });
-  return sel;
-}
-
-function addSlotRow(container, dayKey) {
-  const row = document.createElement("div");
-  row.className = "slot-row";
-  row.dataset.dayKey = dayKey;
-
-  const startSel = buildTimeSelect("");
-  const sep = document.createElement("span");
-  sep.className = "slot-separator";
-  sep.textContent = "\u2013"; // en-dash
-  const endSel = buildTimeSelect("");
-
-  const removeBtn = document.createElement("button");
-  removeBtn.type = "button";
-  removeBtn.className = "slot-remove";
-  removeBtn.innerHTML = "&times;";
-  removeBtn.title = currentLang === "en" ? "Remove" : "Eliminar";
-  removeBtn.addEventListener("click", () => {
-    row.remove();
-    // If no slots left, add one empty one back
-    const remaining = container.querySelectorAll(".slot-row");
-    if (remaining.length === 0) addSlotRow(container, dayKey);
-  });
-
-  row.appendChild(startSel);
-  row.appendChild(sep);
-  row.appendChild(endSel);
-  row.appendChild(removeBtn);
-  container.appendChild(row);
-}
-
-function buildDayRows() {
-  const wrap = document.getElementById("general-days");
-  wrap.innerHTML = "";
-
-  DAYS.forEach(day => {
-    const row = document.createElement("div");
-    row.className = "day-row";
-    row.id = "day-" + day.key;
-
-    const header = document.createElement("div");
-    header.className = "day-header";
-
-    const toggle = document.createElement("input");
-    toggle.type = "checkbox";
-    toggle.className = "day-toggle";
-    toggle.id = "toggle-" + day.key;
-    toggle.addEventListener("change", () => {
-      row.classList.toggle("active", toggle.checked);
-    });
-
-    const label = document.createElement("label");
-    label.className = "day-label";
-    label.dataset.dayKey = day.key;
-    label.textContent = day[currentLang];
-    label.htmlFor = "toggle-" + day.key;
-    label.style.cursor = "pointer";
-
-    header.appendChild(toggle);
-    header.appendChild(label);
-
-    const slotsWrap = document.createElement("div");
-    slotsWrap.className = "day-slots";
-    slotsWrap.id = "slots-" + day.key;
-
-    // One empty slot by default
-    addSlotRow(slotsWrap, day.key);
-
-    const addBtn = document.createElement("button");
-    addBtn.type = "button";
-    addBtn.className = "add-slot-btn";
-    addBtn.textContent = currentLang === "en" ? "+ Add time slot" : "+ Agregar franja";
-    addBtn.dataset.en = "+ Add time slot";
-    addBtn.dataset.es = "+ Agregar franja";
-    addBtn.addEventListener("click", () => addSlotRow(slotsWrap, day.key));
-
-    slotsWrap.appendChild(addBtn);
-
-    row.appendChild(header);
-    row.appendChild(slotsWrap);
-    wrap.appendChild(row);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// URGENT GAPS
-// ══════════════════════════════════════════════════════════════════════════
-
-function addUrgentEntry() {
-  const wrap = document.getElementById("urgent-entries");
-  const entry = document.createElement("div");
-  entry.className = "urgent-entry";
-
-  // Day dropdown
-  const daySel = document.createElement("select");
-  daySel.className = "urgent-day-select";
-  const phOpt = document.createElement("option");
-  phOpt.value = "";
-  phOpt.textContent = currentLang === "en" ? "Day..." : "D\u00eda...";
-  daySel.appendChild(phOpt);
-  DAYS.forEach(d => {
-    const opt = document.createElement("option");
-    opt.value = d.key;
-    opt.textContent = d[currentLang];
-    daySel.appendChild(opt);
-  });
-
-  // Start time
-  const startSel = buildTimeSelect("");
-  const sep = document.createElement("span");
-  sep.className = "slot-separator";
-  sep.textContent = "\u2013";
-  const endSel = buildTimeSelect("");
-
-  // Note
-  const note = document.createElement("input");
-  note.type = "text";
-  note.className = "urgent-note";
-  note.placeholder = currentLang === "en" ? "Note (optional)" : "Nota (opcional)";
-  note.dataset.placeholderEn = "Note (optional)";
-  note.dataset.placeholderEs = "Nota (opcional)";
-
-  // Remove button
-  const removeBtn = document.createElement("button");
-  removeBtn.type = "button";
-  removeBtn.className = "slot-remove";
-  removeBtn.innerHTML = "&times;";
-  removeBtn.addEventListener("click", () => entry.remove());
-
-  entry.appendChild(daySel);
-  entry.appendChild(startSel);
-  entry.appendChild(sep);
-  entry.appendChild(endSel);
-  entry.appendChild(note);
-  entry.appendChild(removeBtn);
-  wrap.appendChild(entry);
-}
-
-// ══════════════════════════════════════════════════════════════════════════
 // HOLIDAYS
 // ══════════════════════════════════════════════════════════════════════════
 
@@ -1824,7 +2007,6 @@ function showForm() {
   document.getElementById("pin-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
   document.getElementById("feedback-screen").classList.add("hidden");
-  buildDayRows();
   initCombobox();
   switchLanguage(currentLang);
 }
@@ -1832,12 +2014,8 @@ function showForm() {
 function resetForm() {
   document.getElementById("feedback-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
-
-  // Clear form
   selectedTeacher = "";
   document.getElementById("teacher-input").value = "";
-  buildDayRows();
-  document.getElementById("urgent-entries").innerHTML = "";
   document.getElementById("holiday-entries").innerHTML = "";
   clearCurrentSchedule();
   switchLanguage(currentLang);
@@ -1849,64 +2027,40 @@ function resetForm() {
 // ══════════════════════════════════════════════════════════════════════════
 
 function collectData() {
-  // Teacher
   if (!selectedTeacher) {
     document.getElementById("teacher-error").classList.remove("hidden");
     document.getElementById("teacher-input").focus();
     return null;
   }
-
-  // Same-as-before flags
-  const gapsSame = document.getElementById("gaps-same-toggle").checked;
-  const generalSame = document.getElementById("general-same-toggle").checked;
-
-  // General availability
-  let general = "no_change";
-  if (!generalSame) {
-    general = {};
-    DAYS.forEach(day => {
-      const toggle = document.getElementById("toggle-" + day.key);
-      if (!toggle.checked) {
-        general[day.key] = [];
-        return;
-      }
-      const slots = [];
-      const rows = document.querySelectorAll("#slots-" + day.key + " .slot-row");
-      rows.forEach(row => {
-        const selects = row.querySelectorAll("select");
-        const start = selects[0]?.value;
-        const end = selects[1]?.value;
-        if (start && end && start < end) {
-          slots.push(start + "-" + end);
-        }
-      });
-      general[day.key] = slots;
-    });
+  if (!editorState || !originalState) {
+    // Teacher selected but data hasn't loaded — abort gracefully
+    return null;
   }
 
-  // Gaps in schedule
-  let urgent = "no_change";
-  if (!gapsSame) {
-    urgent = [];
-    document.querySelectorAll(".urgent-entry").forEach(entry => {
-      const daySel = entry.querySelector(".urgent-day-select");
-      const selects = entry.querySelectorAll("select:not(.urgent-day-select)");
-      const noteInput = entry.querySelector(".urgent-note");
-      const day = daySel?.value;
-      const start = selects[0]?.value;
-      const end = selects[1]?.value;
-      if (day && start && end && start < end) {
-        urgent.push({
-          day: day,
-          start: start,
-          end: end,
-          note: (noteInput?.value || "").trim()
-        });
-      }
-    });
-  }
+  // Per-day no_change diff: send "no_change" for days that match the
+  // originally-loaded state byte-for-byte; send the painted slots for days
+  // that differ. The Apps Script merges per-day, so days the teacher didn't
+  // touch keep their saved values without us having to mirror them back.
+  const general = {};
+  const urgent = {};
+  ALL_DAYS.forEach(day => {
+    if (slotsEqualGeneral(editorState.general[day], originalState.general[day])) {
+      general[day] = "no_change";
+    } else {
+      general[day] = (editorState.general[day] || []).map(s => `${s.start}-${s.end}`);
+    }
+    if (slotsEqualUrgent(editorState.urgent[day], originalState.urgent[day])) {
+      urgent[day] = "no_change";
+    } else {
+      urgent[day] = (editorState.urgent[day] || []).map(s => ({
+        start: s.start,
+        end: s.end,
+        note: (s.note || "").trim(),
+      }));
+    }
+  });
 
-  // Holidays
+  // Holidays — unchanged from v1
   const holidays = [];
   document.querySelectorAll(".holiday-entry").forEach(entry => {
     const dates = entry.querySelectorAll("input[type='date']");
@@ -1916,13 +2070,32 @@ function collectData() {
     if (from) {
       holidays.push({
         from: from,
-        to: to || from, // single day if no end date
+        to: to || from,
         note: (noteInput?.value || "").trim()
       });
     }
   });
 
   return { pin, teacher: selectedTeacher, general, urgent, holidays };
+}
+
+function slotsEqualGeneral(a, b) {
+  a = a || []; b = b || [];
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].start !== b[i].start || a[i].end !== b[i].end) return false;
+  }
+  return true;
+}
+
+function slotsEqualUrgent(a, b) {
+  a = a || []; b = b || [];
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].start !== b[i].start || a[i].end !== b[i].end) return false;
+    if ((a[i].note || "") !== (b[i].note || "")) return false;
+  }
+  return true;
 }
 
 async function submitForm() {
