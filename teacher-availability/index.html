@@ -598,6 +598,51 @@
       line-height: 1.4;
     }
 
+    /* ── Phase B explanatory legend list inside the subtitle ── */
+    .current-schedule__legend-list {
+      margin: 10px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    .current-schedule__legend-list li {
+      margin: 6px 0;
+      padding-left: 22px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .current-schedule__legend-list li .current-schedule__swatch {
+      position: absolute;
+      left: 0;
+      top: 4px;
+    }
+
+    /* ── Floating "HH:MM – HH:MM" tooltip shown while dragging on a bar ── */
+    .current-schedule__preview-label {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      background: var(--shine-dark-teal);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+      transform: translateX(-50%);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .current-schedule__preview-label::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--shine-dark-teal);
+    }
+
     /* ── Editor mode — appended in Phase B ── */
     .editor-mode-row {
       display: flex;
@@ -1710,19 +1755,19 @@ function renderCurrentSchedule(data) {
     </div>
     <div class="current-schedule__subtitle">${
       currentLang === 'en'
-        ? "Set the days and time blocks when you're generally available to teach at Shine. Tap or drag on a day to paint. Switch to Gap mode to mark exceptions (e.g. a recent student left). Days you don't touch keep their saved values."
-        : "Indica los días y bloques de horas en los que estás disponible para dar clases en Shine en general. Toca o arrastra sobre un día para pintar. Cambia al modo Hueco para marcar excepciones (p. ej. un alumno acaba de irse). Los días que no toques conservan los valores guardados."
+        ? `There are <strong>two things</strong> you can set on the calendar below:
+           <ul class="current-schedule__legend-list">
+             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>General availability</strong> — your regular working hours at Shine, when you’re available to teach.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Gaps</strong> — a specific time slot that needs filling right now, e.g. a student just left and you’d like a new one to take their slot.</li>
+           </ul>
+           Pick which one you want to paint using the <strong>Available</strong> / <strong>Gap</strong> buttons above the calendar, then tap or drag on a day’s bar to paint. Days you don’t touch keep their saved values.`
+        : `Hay <strong>dos cosas</strong> que puedes ajustar en el calendario:
+           <ul class="current-schedule__legend-list">
+             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>Disponibilidad general</strong> — tu horario habitual de trabajo en Shine, cuando estás disponible para dar clases.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Huecos</strong> — un hueco concreto que necesita llenarse ahora, p. ej. un alumno acaba de irse y te gustaría que asignen otro a ese hueco.</li>
+           </ul>
+           Elige cuál quieres pintar con los botones <strong>Disponible</strong> / <strong>Hueco</strong> encima del calendario, y luego toca o arrastra sobre la barra de un día para pintar. Los días que no toques conservan los valores guardados.`
     }</div>
-    <div class="current-schedule__legend">
-      <span class="current-schedule__legend-item">
-        <span class="current-schedule__swatch current-schedule__swatch--general"></span>
-        ${currentLang === 'en' ? 'General availability' : 'Disponibilidad general'}
-      </span>
-      <span class="current-schedule__legend-item">
-        <span class="current-schedule__swatch current-schedule__swatch--urgent"></span>
-        ${currentLang === 'en' ? 'Gap (urgent)' : 'Hueco (urgente)'}
-      </span>
-    </div>
     ${modeRowHtml}
     ${tickRowHtml}
     ${dayRowsHtml}
@@ -1788,7 +1833,13 @@ function onPaintStart(e) {
   const previewEl = document.createElement("div");
   previewEl.className = `current-schedule__preview current-schedule__preview--${currentEditorMode}`;
   barEl.appendChild(previewEl);
-  dragSession = { day, mode: currentEditorMode, startMin, currentEndMin: startMin, barEl, previewEl };
+  // Floating "HH:MM – HH:MM" tooltip so the teacher can see exactly which
+  // minutes they're painting while dragging — eliminates the "is this 16:30
+  // or 16:45?" guesswork the eye can't resolve at the bar's resolution.
+  const labelEl = document.createElement("div");
+  labelEl.className = "current-schedule__preview-label";
+  barEl.appendChild(labelEl);
+  dragSession = { day, mode: currentEditorMode, startMin, currentEndMin: startMin, barEl, previewEl, labelEl };
   updatePreview();
   document.addEventListener("mousemove", onPaintMove);
   document.addEventListener("mouseup", onPaintEnd);
@@ -1810,8 +1861,9 @@ function onPaintEnd() {
   document.removeEventListener("touchmove", onPaintMove);
   document.removeEventListener("touchend", onPaintEnd);
 
-  const { day, mode, startMin, currentEndMin, previewEl } = dragSession;
+  const { day, mode, startMin, currentEndMin, previewEl, labelEl } = dragSession;
   if (previewEl && previewEl.parentNode) previewEl.parentNode.removeChild(previewEl);
+  if (labelEl && labelEl.parentNode) labelEl.parentNode.removeChild(labelEl);
   const lo = Math.min(startMin, currentEndMin);
   const hi = Math.max(startMin, currentEndMin);
   const wasDrag = (hi - lo) >= SLOT_GRANULARITY_MIN;
@@ -1833,6 +1885,16 @@ function updatePreview() {
   const width = (minutesToFraction(hi) - minutesToFraction(lo)) * 100;
   dragSession.previewEl.style.left = left.toFixed(2) + "%";
   dragSession.previewEl.style.width = width.toFixed(2) + "%";
+  // Float the time tooltip centered on the painted area, clamped so it
+  // doesn't run off the bar's edges (otherwise it'd half-hide on Mon/Sat
+  // when painting near 08:00 or 22:00).
+  if (dragSession.labelEl) {
+    const midPercent = Math.max(8, Math.min(92, left + width / 2));
+    dragSession.labelEl.style.left = midPercent.toFixed(2) + "%";
+    dragSession.labelEl.textContent = (lo === hi)
+      ? minutesToTimeString(lo)
+      : minutesToTimeString(lo) + " – " + minutesToTimeString(hi);
+  }
 }
 
 // === Mutations on editorState ===
