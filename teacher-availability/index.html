@@ -1372,7 +1372,7 @@ function showCurrentScheduleState(stateClass, message) {
   el.innerHTML = `
     <div class="current-schedule__heading">
       <div class="current-schedule__title">${
-        currentLang === "en" ? "Your current schedule" : "Tu horario actual"
+        currentLang === "en" ? "Your general availability" : "Tu disponibilidad general"
       }</div>
     </div>
     <div class="${stateClass}">${message}</div>
@@ -1486,13 +1486,13 @@ function renderCurrentSchedule(data) {
   el.classList.remove("hidden");
   el.innerHTML = `
     <div class="current-schedule__heading">
-      <div class="current-schedule__title">${currentLang === "en" ? "Your current schedule" : "Tu horario actual"}</div>
+      <div class="current-schedule__title">${currentLang === "en" ? "Your general availability" : "Tu disponibilidad general"}</div>
       ${tsLabel ? `<div class="current-schedule__timestamp">${tsLabel}</div>` : ""}
     </div>
     <div class="current-schedule__subtitle">${
       currentLang === "en"
-        ? "This is what we have on file. Use the sections below to update — leave a section as “No changes” to keep it the same."
-        : "Esto es lo que tenemos guardado. Usa las secciones de abajo para actualizar — deja una sección como “Sin cambios” para conservarla igual."
+        ? "These are the days and time blocks when you're generally available to teach at Shine — what we currently have on file. Use the sections below to update, or leave a section as “No changes” to keep it the same."
+        : "Estos son los días y bloques de horas en los que estás disponible para dar clases en Shine en general — lo que tenemos guardado. Usa las secciones de abajo para actualizar, o deja una sección como “Sin cambios” para conservarla igual."
     }</div>
     <div class="current-schedule__legend">
       <span class="current-schedule__legend-item">
