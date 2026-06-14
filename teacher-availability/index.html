@@ -1223,6 +1223,7 @@ let currentLang = "es";
 let teachers = [];
 let selectedTeacher = "";
 let pin = "";
+let formToken = "";  // Phase 2: set from ?t=TOKEN (personal link); bypasses PIN + dropdown
 
 // Day keys and bilingual labels
 const DAYS = [
@@ -2076,6 +2077,45 @@ function showForm() {
   switchLanguage(currentLang);
 }
 
+// Phase 2: enter straight into the form from a personal ?t=TOKEN link.
+// The token both identifies the teacher and authorizes the request (no PIN,
+// no dropdown). On a bad/expired token we clear it and fall through to the
+// normal PIN screen.
+async function enterWithToken() {
+  try {
+    const resp = await fetch(API_BASE + "/current?t=" + encodeURIComponent(formToken));
+    const data = await resp.json();
+    if (!resp.ok || !data || data.error || !data.teacher) {
+      formToken = "";
+      return;
+    }
+    selectedTeacher = data.teacher;
+    showForm();
+    lockTeacherToToken(data.teacher);
+    renderCurrentSchedule(data);  // hydrate the editor from the same payload
+  } catch (e) {
+    formToken = "";
+  }
+}
+
+// Hide the teacher picker (identity is fixed by the link) and show whose
+// availability this is, above the form.
+function lockTeacherToToken(name) {
+  const input = document.getElementById("teacher-input");
+  const section = input ? input.closest(".sf-section") : null;
+  if (section) section.style.display = "none";
+  if (input) input.value = name;
+  let banner = document.getElementById("token-teacher-banner");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "token-teacher-banner";
+    banner.style.cssText = "font-weight:700;font-size:1.15rem;color:#03444A;margin:4px 0 16px;";
+    const formScreen = document.getElementById("form-screen");
+    if (formScreen) formScreen.prepend(banner);
+  }
+  banner.textContent = (currentLang === "en" ? "Availability for " : "Disponibilidad de ") + name;
+}
+
 function resetForm() {
   document.getElementById("feedback-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
@@ -2141,7 +2181,9 @@ function collectData() {
     }
   });
 
-  return { pin, teacher: selectedTeacher, general, urgent, holidays };
+  return formToken
+    ? { token: formToken, general, urgent, holidays }
+    : { pin, teacher: selectedTeacher, general, urgent, holidays };
 }
 
 function slotsEqualGeneral(a, b) {
@@ -2256,6 +2298,14 @@ function showFeedback(type, detail) {
     pin = "preview";
     teachers = DEMO_TEACHERS;
     showForm();
+    return;
+  }
+
+  // Phase 2: personal link (?t=TOKEN) skips the PIN + dropdown, loads that teacher.
+  const urlToken = new URLSearchParams(window.location.search).get("t");
+  if (urlToken) {
+    formToken = urlToken;
+    enterWithToken();
     return;
   }
 
