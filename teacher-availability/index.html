@@ -1190,11 +1190,12 @@
 // CONFIGURATION
 // ══════════════════════════════════════════════════════════════════════════
 
-// Replace this URL with your Google Apps Script deployment URL
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhlmGwrnYDU1Ppyoj3j9cVmRvCM5fC10fAPjvRtiuyC-zwy7bh9BzJ1TRMpwzUgsaO/exec";
+// V2 backend (direct write). Was the Google Apps Script + Sheet relay; now
+// points at the FastAPI availability-form endpoints (no Google Sheet in path).
+const API_BASE = "https://shine-music-school.fly.dev/api/availability-form";
 
 // Preview mode: auto-detected when URL is not configured
-const IS_PREVIEW = APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE";
+const IS_PREVIEW = API_BASE === "YOUR_API_BASE_HERE";
 
 // Demo teacher list for preview mode
 const DEMO_TEACHERS = [
@@ -1322,7 +1323,7 @@ async function verifyPin() {
   input.classList.remove("error");
 
   try {
-    const resp = await fetch(APPS_SCRIPT_URL + "?action=teachers&pin=" + encodeURIComponent(val));
+    const resp = await fetch(API_BASE + "/teachers?pin=" + encodeURIComponent(val));
     const data = await resp.json();
 
     if (data.error) {
@@ -1983,9 +1984,8 @@ async function loadCurrentSchedule(teacherName) {
   }
 
   try {
-    const url = APPS_SCRIPT_URL
-      + "?action=current"
-      + "&teacher=" + encodeURIComponent(teacherName)
+    const url = API_BASE
+      + "/current?teacher=" + encodeURIComponent(teacherName)
       + "&pin=" + encodeURIComponent(pin || "");
     const resp = await fetch(url);
     if (myToken !== currentScheduleToken) return; // raced — newer request supersedes
@@ -2184,9 +2184,9 @@ async function submitForm() {
   }
 
   try {
-    const resp = await fetch(APPS_SCRIPT_URL, {
+    const resp = await fetch(API_BASE + "/submit", {
       method: "POST",
-      headers: { "Content-Type": "text/plain" }, // Apps Script requires text/plain for CORS
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
     const result = await resp.json();
@@ -2264,7 +2264,7 @@ function showFeedback(type, detail) {
   if (cachedPin) {
     // Try to validate the cached PIN by fetching teachers
     pin = cachedPin;
-    fetch(APPS_SCRIPT_URL + "?action=teachers&pin=" + encodeURIComponent(cachedPin))
+    fetch(API_BASE + "/teachers?pin=" + encodeURIComponent(cachedPin))
       .then(r => r.json())
       .then(data => {
         if (data.teachers) {
