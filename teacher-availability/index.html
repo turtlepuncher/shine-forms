@@ -2087,14 +2087,18 @@ async function enterWithToken() {
     const data = await resp.json();
     if (!resp.ok || !data || data.error || !data.teacher) {
       formToken = "";
+      localStorage.removeItem("shine-avail-token");  // bad/expired link -> forget it
       return;
     }
+    // Remember this token on the device so the PLAIN url works next time (no
+    // PIN, no need to keep the long link). Cleared by "Not you?" or a bad token.
+    localStorage.setItem("shine-avail-token", formToken);
     selectedTeacher = data.teacher;
     showForm();
     lockTeacherToToken(data.teacher);
     renderCurrentSchedule(data);  // hydrate the editor from the same payload
   } catch (e) {
-    formToken = "";
+    formToken = "";  // network error -> keep any saved token, fall back to PIN
   }
 }
 
@@ -2109,11 +2113,26 @@ function lockTeacherToToken(name) {
   if (!banner) {
     banner = document.createElement("div");
     banner.id = "token-teacher-banner";
-    banner.style.cssText = "font-weight:700;font-size:1.15rem;color:#03444A;margin:4px 0 16px;";
+    banner.style.cssText = "margin:4px 0 16px;";
     const formScreen = document.getElementById("form-screen");
     if (formScreen) formScreen.prepend(banner);
   }
-  banner.textContent = (currentLang === "en" ? "Availability for " : "Disponibilidad de ") + name;
+  banner.innerHTML = "";
+  const title = document.createElement("span");
+  title.style.cssText = "font-weight:700;font-size:1.15rem;color:#03444A;";
+  title.textContent = (currentLang === "en" ? "Availability for " : "Disponibilidad de ") + name;
+  // "Not you? Switch" — for a shared device: forget the saved link, go to PIN.
+  const sw = document.createElement("a");
+  sw.href = "#";
+  sw.style.cssText = "font-size:0.8rem;color:#999;margin-left:10px;white-space:nowrap;";
+  sw.textContent = currentLang === "en" ? "Not you? Switch" : "¿No eres tú? Cambiar";
+  sw.addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("shine-avail-token");
+    window.location.href = window.location.pathname;  // plain url -> PIN screen
+  });
+  banner.appendChild(title);
+  banner.appendChild(sw);
 }
 
 function resetForm() {
@@ -2305,6 +2324,15 @@ function showFeedback(type, detail) {
   const urlToken = new URLSearchParams(window.location.search).get("t");
   if (urlToken) {
     formToken = urlToken;
+    enterWithToken();
+    return;
+  }
+
+  // Remembered link: a token saved on this device the first time the teacher
+  // opened their personal link, so the PLAIN url goes straight in (no PIN).
+  const savedToken = localStorage.getItem("shine-avail-token");
+  if (savedToken) {
+    formToken = savedToken;
     enterWithToken();
     return;
   }
