@@ -5,6 +5,8 @@
   "subtitle": { "en": "Reserve a room at Shine Music School", "es": "Reserva una sala en Estudio Shine" },
   "submit_label": { "en": "Pay & Confirm Booking", "es": "Pagar y confirmar reserva" },
 
+  "rates_api": "https://shine-music-school.fly.dev/api/public/room-rates",
+
   "sections": [
     {
       "id": "booking",

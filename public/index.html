@@ -19,22 +19,100 @@
   <script src="js/validation.js"></script>
   <script src="js/shine-forms.js"></script>
   <script>
-    // Load form definition and boot the renderer
+    // Load form definition, optionally overlay live rates, boot the renderer.
     (async function () {
       const params = new URLSearchParams(window.location.search);
       const formId = params.get('form') || 'practice-room-booking';
+      const root = document.getElementById('shine-form-root');
       try {
         const resp = await fetch(`../forms/${formId}.json`);
         if (!resp.ok) throw new Error(`Form "${formId}" not found`);
         const formDef = await resp.json();
+
+        // Single source of truth: if the form declares a rates API, fetch the
+        // live rates from the Shine control panel and overlay them (prices,
+        // equipment, holidays). On any failure we fall back to the values
+        // bundled in the form JSON so the calculator still works.
+        if (formDef.rates_api) {
+          try {
+            const rr = await fetch(formDef.rates_api, { cache: 'no-store' });
+            if (rr.ok) applyRates(formDef, await rr.json());
+          } catch (e) {
+            console.warn('Live rates unavailable, using bundled values', e);
+          }
+        }
+
         window.shineForm = new ShineForm('shine-form-root', formDef);
       } catch (err) {
-        document.getElementById('shine-form-root').innerHTML =
+        root.innerHTML =
           `<div class="sf-form"><div class="sf-section" style="text-align:center; color:var(--tx-error);">
             <p>Could not load form: ${err.message}</p>
           </div></div>`;
       }
     })();
+
+    // Overlay a /api/public/room-rates payload onto a form definition so the
+    // calculator + display read from the control panel, not hardcoded JSON.
+    function applyRates(formDef, payload) {
+      if (!payload || !payload.rates) return;
+      const r = payload.rates;
+      const equipment = payload.equipment || [];
+      const holidays = (payload.holidays || []).map(h => h.date);
+
+      formDef.calculations = Object.assign({}, formDef.calculations, {
+        base_rate: r.base_rate,
+        peak_rate: r.peak_rate,
+        peak_start_hour: r.peak_start_hour,
+        saturday_is_peak: r.saturday_is_peak,
+        opening_fee: r.opening_fee,
+        same_day_surcharge: r.same_day_surcharge,
+        extra_person_rate: r.extra_person_rate,
+        holidays: holidays,
+        premium_all_day_peak: true,
+        instruments: equipment.map(e => ({ id: e.id, name: e.name, price: e.price }))
+      });
+
+      for (const section of formDef.sections || []) {
+        if (section.catalog) {
+          section.catalog = equipment.map(e => ({
+            id: e.id, name: e.name, price: e.price, max_qty: e.max_qty, image: e.image
+          }));
+        }
+        if (section.id === 'pricing-info' && section.info) {
+          section.info = buildPricingInfo(r);
+        }
+      }
+    }
+
+    // Rebuild the pricing-info card from the live rates so the display never
+    // drifts from what the calculator charges.
+    function buildPricingInfo(r) {
+      const row = (label, value, accent) =>
+        `<div class='sf-pricing-row'><span class='sf-pricing-label'>${label}</span>` +
+        `<span class='sf-pricing-value${accent ? ' sf-pricing-accent' : ''}'>${value}</span></div>`;
+      const open = `${r.open_hour}:00`, peak = `${r.peak_start_hour}:00`, close = `${r.close_hour}:00`;
+      const en =
+        `<div class='sf-pricing-grid'>` +
+        row(`Mon-Fri, ${open}-${peak}`, `${r.base_rate}€/hour`) +
+        row(`Mon-Fri, ${peak}-${close}`, `${r.peak_rate}€/hour`, true) +
+        row(`Saturdays, ${open}-${close}`, `${r.base_rate}€/hour`) +
+        row(`Sundays & holidays`, `${r.peak_rate}€/hour + ${r.opening_fee}€ opening`, true) +
+        `<div class='sf-pricing-divider'></div>` +
+        row(`Extra participants`, `+${r.extra_person_rate}€/person/hour`) +
+        `</div>` +
+        `<a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank' class='sf-pricing-terms'>Terms & Conditions</a>`;
+      const es =
+        `<div class='sf-pricing-grid'>` +
+        row(`Lun-Vie, ${open}-${peak}`, `${r.base_rate}€/hora`) +
+        row(`Lun-Vie, ${peak}-${close}`, `${r.peak_rate}€/hora`, true) +
+        row(`Sábados, ${open}-${close}`, `${r.base_rate}€/hora`) +
+        row(`Domingos y festivos`, `${r.peak_rate}€/hora + ${r.opening_fee}€ apertura`, true) +
+        `<div class='sf-pricing-divider'></div>` +
+        row(`Participantes extra`, `+${r.extra_person_rate}€/persona/hora`) +
+        `</div>` +
+        `<a href='https://www.themusicroombcn.com/terms-conditions/' target='_blank' class='sf-pricing-terms'>Términos y condiciones</a>`;
+      return { en, es };
+    }
   </script>
 </body>
 </html>
