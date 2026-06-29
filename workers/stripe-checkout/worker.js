@@ -56,7 +56,7 @@ export default {
 // ---------------------------------------------------------------------------
 
 async function fetchQuote(data) {
-  const lang = data.lang === 'es' ? 'es' : 'en';
+  const lang = (data.language || data.lang) === 'es' ? 'es' : 'en';
   const resp = await fetch(`${QUOTE_URL}?lang=${lang}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -98,7 +98,7 @@ async function createCheckoutSession(secretKey, data, calc) {
   params.set('metadata[additional_requests]', (data.additional_requests || '').substring(0, 500));
   // Carry the equipment + language so the V2 webhook can record the full booking.
   params.set('metadata[instruments]', JSON.stringify(data.instruments || {}).substring(0, 490));
-  params.set('metadata[lang]', data.lang === 'es' ? 'es' : 'en');
+  params.set('metadata[lang]', (data.language || data.lang) === 'es' ? 'es' : 'en');
 
   const currency = (calc.currency || 'EUR').toLowerCase();
   for (let i = 0; i < calc.breakdown.length; i++) {
