@@ -99,6 +99,9 @@ async function createCheckoutSession(secretKey, data, calc) {
   // Carry the equipment + language so the V2 webhook can record the full booking.
   params.set('metadata[instruments]', JSON.stringify(data.instruments || {}).substring(0, 490));
   params.set('metadata[lang]', (data.language || data.lang) === 'es' ? 'es' : 'en');
+  // Tags this session as ours so the V2 webhook ignores other businesses'
+  // checkouts on the shared Stripe account.
+  params.set('metadata[booking_source]', 'shine_room_booking');
 
   const currency = (calc.currency || 'EUR').toLowerCase();
   for (let i = 0; i < calc.breakdown.length; i++) {
