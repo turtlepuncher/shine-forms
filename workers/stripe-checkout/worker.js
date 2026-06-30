@@ -114,8 +114,8 @@ export default {
 // ---------------------------------------------------------------------------
 
 async function fetchQuote(data) {
-  // Line-item language stays es/en until the V2 backend supports `ca` (Change B).
-  const lang = (data.language || data.lang) === 'es' ? 'es' : 'en';
+  // Quote line-item labels are localized by the V2 backend (en / es / ca).
+  const lang = bookingLang(data);
   const resp = await fetch(`${QUOTE_URL}?lang=${lang}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -155,9 +155,10 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
   params.set('metadata[customer_name]', data.name);
   params.set('metadata[customer_phone]', data.phone || '');
   params.set('metadata[additional_requests]', (data.additional_requests || '').substring(0, 500));
-  // Carry the equipment + language so the V2 webhook can record the full booking.
+  // Carry the equipment + language so the V2 webhook can record the full booking
+  // and send the confirmation email in the booking language (en / es / ca).
   params.set('metadata[instruments]', JSON.stringify(data.instruments || {}).substring(0, 490));
-  params.set('metadata[lang]', (data.language || data.lang) === 'es' ? 'es' : 'en');
+  params.set('metadata[lang]', bookingLang(data));
   // Tags this session as ours so the V2 webhook ignores other businesses'
   // checkouts on the shared Stripe account.
   params.set('metadata[booking_source]', 'shine_room_booking');
