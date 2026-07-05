@@ -18,17 +18,16 @@
 const QUOTE_URL = 'https://shine-music-school.fly.dev/api/public/room-booking/quote';
 
 // The Music Room is multilingual; redirect to the language-correct pages.
-// (Test phase: cancel returns to the -test / reserva booking pages. At the live
-// flip, swap these for the live booking slugs: en -> /booking/, es -> /es/reservar/,
-// ca -> /ca/<live-slug>/.)
+// (Live since 2026-07-05: the native form runs on the live booking pages, so a
+// cancelled checkout returns there. The CA page kept its slug at the flip.)
 const TMR_CONFIRM = {
   en: '/booking-confirmation/',
   es: '/es/confirmacion-reserva/',
   ca: '/ca/confirmacio-reserva/',
 };
 const TMR_CANCEL = {
-  en: '/booking-test/',
-  es: '/es/reservar-test/',
+  en: '/booking/',
+  es: '/es/reservar/',
   ca: '/ca/reserva-sala/',
 };
 
