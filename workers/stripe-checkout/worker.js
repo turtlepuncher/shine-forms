@@ -24,11 +24,13 @@ const TMR_CONFIRM = {
   en: '/booking-confirmation/',
   es: '/es/confirmacion-reserva/',
   ca: '/ca/confirmacio-reserva/',
+  it: '/it/conferma-prenotazione/',
 };
 const TMR_CANCEL = {
   en: '/booking/',
   es: '/es/reservar/',
   ca: '/ca/reserva-sala/',
+  it: '/it/prenota-sala/',
 };
 
 // Resolver for a Music Room origin: same paths across origins, only the base differs.
@@ -57,10 +59,10 @@ const ORIGINS = {
   'https://stg-themusicroom-staging.kinsta.cloud': tmrOrigin('https://stg-themusicroom-staging.kinsta.cloud'),
 };
 
-// Booking language for redirects: en / es / ca (defaults to en).
+// Booking language for redirects: en / es / ca / it (defaults to en).
 function bookingLang(data) {
   const l = data.language || data.lang;
-  return l === 'es' || l === 'ca' ? l : 'en';
+  return l === 'es' || l === 'ca' || l === 'it' ? l : 'en';
 }
 
 export default {
