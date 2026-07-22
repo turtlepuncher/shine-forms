@@ -16,6 +16,39 @@
  */
 
 const QUOTE_URL = 'https://shine-music-school.fly.dev/api/public/room-booking/quote';
+const CLAIM_URL = 'https://shine-music-school.fly.dev/api/public/room-booking/last-minute-link/claim';
+
+// Same-day (last-minute) bookings are only allowed through the hidden
+// last-minute pages, whose links carry a one-time token minted on the
+// control panel. The gate lives HERE, at the money step: a same-day
+// checkout without a claimable token is refused, so old or forwarded
+// links die server-side no matter what the client-side form allows.
+const LM_MESSAGES = {
+  missing: {
+    en: 'Same-day bookings need a valid last-minute link. Please contact us to get one.',
+    es: 'Las reservas para el mismo día necesitan un enlace de última hora válido. Contáctanos para conseguir uno.',
+    ca: 'Les reserves per al mateix dia necessiten un enllaç d’última hora vàlid. Contacta amb nosaltres per aconseguir-ne un.',
+    it: 'Le prenotazioni in giornata richiedono un link last minute valido. Contattaci per riceverne uno.',
+  },
+  dead: {
+    en: 'This last-minute link has already been used or has expired. Please contact us for a new one.',
+    es: 'Este enlace de última hora ya se ha utilizado o ha caducado. Contáctanos para conseguir uno nuevo.',
+    ca: 'Aquest enllaç d’última hora ja s’ha fet servir o ha caducat. Contacta amb nosaltres per aconseguir-ne un de nou.',
+    it: 'Questo link last minute è già stato usato o è scaduto. Contattaci per riceverne uno nuovo.',
+  },
+  busy: {
+    en: 'This link is already being used in another checkout. If that payment was not completed, try again in about half an hour, or contact us.',
+    es: 'Este enlace ya se está utilizando en otro pago. Si ese pago no se completó, inténtalo de nuevo en una media hora, o contáctanos.',
+    ca: 'Aquest enllaç ja s’està fent servir en un altre pagament. Si aquell pagament no es va completar, torna-ho a provar d’aquí a mitja hora, o contacta amb nosaltres.',
+    it: 'Questo link è già in uso in un altro pagamento. Se quel pagamento non è stato completato, riprova tra circa mezz’ora, o contattaci.',
+  },
+  error: {
+    en: 'We could not verify your booking link. Please try again in a moment.',
+    es: 'No hemos podido verificar tu enlace de reserva. Inténtalo de nuevo en un momento.',
+    ca: 'No hem pogut verificar el teu enllaç de reserva. Torna-ho a provar d’aquí a un moment.',
+    it: 'Non siamo riusciti a verificare il tuo link di prenotazione. Riprova tra un momento.',
+  },
+};
 
 // The Music Room is multilingual; redirect to the language-correct pages.
 // (Live since 2026-07-05: the native form runs on the live booking pages, so a
@@ -65,6 +98,17 @@ function bookingLang(data) {
   return l === 'es' || l === 'ca' || l === 'it' ? l : 'en';
 }
 
+// Today in Europe/Madrid as YYYY-MM-DD (en-CA locale gives ISO order),
+// matching the payload's date format and the V2 backend's Madrid clock.
+function madridToday() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -92,11 +136,36 @@ export default {
       if (!data.name || !data.email) {
         return jsonResponse({ error: 'Name and email are required' }, 400, origin);
       }
+      // A malformed date could slip past the same-day gate below (string
+      // comparison), so insist on the YYYY-MM-DD the forms always send.
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data.date))) {
+        return jsonResponse({ error: 'Invalid booking date' }, 400, origin);
+      }
 
       // Authoritative price from the control panel (never hardcoded here).
       const calc = await fetchQuote(data);
       if (!calc || !Array.isArray(calc.breakdown) || calc.total <= 0) {
         return jsonResponse({ error: 'Invalid booking: total is zero' }, 400, origin);
+      }
+
+      // Same-day gate: claim the one-time last-minute token right before
+      // money changes hands. Quoting first means a booking the backend
+      // would reject never burns a token.
+      if (data.date === madridToday()) {
+        const lang = bookingLang(data);
+        const token = String(data.last_minute_token || '').trim();
+        if (!token) {
+          return jsonResponse({ error: LM_MESSAGES.missing[lang] }, 403, origin);
+        }
+        const claim = await claimLastMinuteToken(token, env.LM_CLAIM_KEY);
+        if (!claim.ok) {
+          const key = claim.reason === 'busy' ? 'busy'
+            : claim.reason === 'error' ? 'error' : 'dead';
+          return jsonResponse({ error: LM_MESSAGES[key][lang] }, claim.status, origin);
+        }
+        // The claim nonce rides into Stripe metadata so the V2 webhook can
+        // tell a payment from a superseded (re-claimed) session apart.
+        data.lm_nonce = claim.nonce || '';
       }
 
       const redirect = originConfig.urls(bookingLang(data));
@@ -160,6 +229,17 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
   // and send the confirmation email in the booking language (en / es / ca).
   params.set('metadata[instruments]', JSON.stringify(data.instruments || {}).substring(0, 490));
   params.set('metadata[lang]', bookingLang(data));
+  // The claimed one-time token rides along so the V2 webhook can mark it
+  // used (and flag the booking last-minute) once the payment lands. The
+  // session must die BEFORE the 35-min claim TTL frees the token, or one
+  // token could fund two payable sessions (Stripe minimum expiry: 30 min).
+  if (data.last_minute_token) {
+    params.set('metadata[last_minute_token]', String(data.last_minute_token).substring(0, 100));
+    if (data.lm_nonce) {
+      params.set('metadata[lm_nonce]', String(data.lm_nonce).substring(0, 64));
+    }
+    params.set('expires_at', String(Math.floor(Date.now() / 1000) + 31 * 60));
+  }
   // Tags this session as ours so the V2 webhook ignores other businesses'
   // checkouts on the shared Stripe account.
   params.set('metadata[booking_source]', 'shine_room_booking');
@@ -192,6 +272,49 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
     throw new Error('Payment failed: ' + (result.error ? result.error.message : 'Unknown error'));
   }
   return { url: result.url, id: result.id };
+}
+
+// ---------------------------------------------------------------------------
+// Last-minute token claim (V2 backend enforces single use + expiry)
+// ---------------------------------------------------------------------------
+
+async function claimLastMinuteToken(token, claimKey) {
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    // Shared secret: the V2 backend skips rate limiting for the real Worker,
+    // so anonymous junk traffic can never 429 a legitimate checkout.
+    if (claimKey) {
+      headers['X-LM-Claim-Key'] = claimKey;
+    }
+    const resp = await fetch(CLAIM_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ token }),
+    });
+    let body = null;
+    try {
+      body = await resp.json();
+    } catch {
+      // non-JSON response; fall through on status alone
+    }
+    if (resp.ok) {
+      return { ok: true, nonce: (body && body.nonce) || '' };
+    }
+    // Branch on HTTP status FIRST; detail is only a reason enum on 403/409.
+    if (resp.status === 409) {
+      return { ok: false, reason: 'busy', status: 409 };
+    }
+    if (resp.status === 429 || resp.status >= 500) {
+      return { ok: false, reason: 'error', status: 503 };
+    }
+    const reason = body && typeof body.detail === 'string' ? body.detail : 'unknown';
+    return { ok: false, reason, status: 403 };
+  } catch (err) {
+    // Backend unreachable: fail CLOSED (this is the enforcement point) with
+    // a retryable message.
+    console.error('last-minute claim error:', err);
+    return { ok: false, reason: 'error', status: 503 };
+  }
 }
 
 // ---------------------------------------------------------------------------
