@@ -184,11 +184,14 @@ export default {
 // ---------------------------------------------------------------------------
 
 async function fetchQuote(data) {
-  // Quote line-item labels are localized by the V2 backend (en / es / ca).
+  // Quote line-item labels are localized by the V2 backend (en / es / ca / it).
+  // Timeout: the backend's DB layer can stall for minutes during a Turso
+  // reconnect storm; better a fast clean error than a hanging spinner.
   const lang = bookingLang(data);
   const resp = await fetch(`${QUOTE_URL}?lang=${lang}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(20000),
     body: JSON.stringify({
       date: data.date,
       start_time: data.start_time,
@@ -263,6 +266,7 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
       'Authorization': 'Basic ' + btoa(secretKey + ':'),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+    signal: AbortSignal.timeout(30000),
     body: params.toString(),
   });
 
@@ -289,6 +293,7 @@ async function claimLastMinuteToken(token, claimKey) {
     const resp = await fetch(CLAIM_URL, {
       method: 'POST',
       headers,
+      signal: AbortSignal.timeout(15000),
       body: JSON.stringify({ token }),
     });
     let body = null;
