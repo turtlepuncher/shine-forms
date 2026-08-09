@@ -8,8 +8,8 @@
  * which records the booking + sends the emails.
  *
  * Multi-origin: every allowed origin has its own success/cancel redirect targets.
- * For The Music Room origins those targets are language-aware (en / es / ca) so a
- * customer lands on the confirmation page in the language they booked in.
+ * For The Music Room origins those targets are language-aware (en / es / ca / it
+ * / fr) so a customer lands on the confirmation page in the language they booked in.
  *
  * Environment variable (set via wrangler secret):
  *   STRIPE_SECRET_KEY = sk_live_...
@@ -29,24 +29,28 @@ const LM_MESSAGES = {
     es: 'Las reservas para el mismo día necesitan un enlace de última hora válido. Contáctanos para conseguir uno.',
     ca: 'Les reserves per al mateix dia necessiten un enllaç d’última hora vàlid. Contacta amb nosaltres per aconseguir-ne un.',
     it: 'Le prenotazioni in giornata richiedono un link last minute valido. Contattaci per riceverne uno.',
+    fr: 'Les réservations pour le jour même nécessitent un lien de dernière minute valide. Contactez-nous pour en obtenir un.',
   },
   dead: {
     en: 'This last-minute link has already been used or has expired. Please contact us for a new one.',
     es: 'Este enlace de última hora ya se ha utilizado o ha caducado. Contáctanos para conseguir uno nuevo.',
     ca: 'Aquest enllaç d’última hora ja s’ha fet servir o ha caducat. Contacta amb nosaltres per aconseguir-ne un de nou.',
     it: 'Questo link last minute è già stato usato o è scaduto. Contattaci per riceverne uno nuovo.',
+    fr: 'Ce lien de dernière minute a déjà été utilisé ou a expiré. Contactez-nous pour en obtenir un nouveau.',
   },
   busy: {
     en: 'This link is already being used in another checkout. If that payment was not completed, try again in about half an hour, or contact us.',
     es: 'Este enlace ya se está utilizando en otro pago. Si ese pago no se completó, inténtalo de nuevo en una media hora, o contáctanos.',
     ca: 'Aquest enllaç ja s’està fent servir en un altre pagament. Si aquell pagament no es va completar, torna-ho a provar d’aquí a mitja hora, o contacta amb nosaltres.',
     it: 'Questo link è già in uso in un altro pagamento. Se quel pagamento non è stato completato, riprova tra circa mezz’ora, o contattaci.',
+    fr: 'Ce lien est déjà utilisé dans un autre paiement. Si ce paiement n’a pas abouti, réessayez dans une demi-heure environ, ou contactez-nous.',
   },
   error: {
     en: 'We could not verify your booking link. Please try again in a moment.',
     es: 'No hemos podido verificar tu enlace de reserva. Inténtalo de nuevo en un momento.',
     ca: 'No hem pogut verificar el teu enllaç de reserva. Torna-ho a provar d’aquí a un moment.',
     it: 'Non siamo riusciti a verificare il tuo link di prenotazione. Riprova tra un momento.',
+    fr: 'Nous n’avons pas pu vérifier votre lien de réservation. Réessayez dans un instant.',
   },
 };
 
@@ -58,12 +62,14 @@ const TMR_CONFIRM = {
   es: '/es/confirmacion-reserva/',
   ca: '/ca/confirmacio-reserva/',
   it: '/it/conferma-prenotazione/',
+  fr: '/fr/confirmation-reservation/',
 };
 const TMR_CANCEL = {
   en: '/booking/',
   es: '/es/reservar/',
   ca: '/ca/reserva-sala/',
   it: '/it/prenota-sala/',
+  fr: '/fr/reserver-salle/',
 };
 
 // Resolver for a Music Room origin: same paths across origins, only the base differs.
@@ -92,10 +98,10 @@ const ORIGINS = {
   'https://stg-themusicroom-staging.kinsta.cloud': tmrOrigin('https://stg-themusicroom-staging.kinsta.cloud'),
 };
 
-// Booking language for redirects: en / es / ca / it (defaults to en).
+// Booking language for redirects: en / es / ca / it / fr (defaults to en).
 function bookingLang(data) {
   const l = data.language || data.lang;
-  return l === 'es' || l === 'ca' || l === 'it' ? l : 'en';
+  return l === 'es' || l === 'ca' || l === 'it' || l === 'fr' ? l : 'en';
 }
 
 // Today in Europe/Madrid as YYYY-MM-DD (en-CA locale gives ISO order),
@@ -184,7 +190,7 @@ export default {
 // ---------------------------------------------------------------------------
 
 async function fetchQuote(data) {
-  // Quote line-item labels are localized by the V2 backend (en / es / ca / it).
+  // Quote line-item labels are localized by the V2 backend (en / es / ca / it / fr).
   // Timeout: the backend's DB layer can stall for minutes during a Turso
   // reconnect storm; better a fast clean error than a hanging spinner.
   const lang = bookingLang(data);
@@ -229,7 +235,7 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
   params.set('metadata[customer_phone]', data.phone || '');
   params.set('metadata[additional_requests]', (data.additional_requests || '').substring(0, 500));
   // Carry the equipment + language so the V2 webhook can record the full booking
-  // and send the confirmation email in the booking language (en / es / ca).
+  // and send the confirmation email in the booking language (en / es / ca / it / fr).
   params.set('metadata[instruments]', JSON.stringify(data.instruments || {}).substring(0, 490));
   params.set('metadata[lang]', bookingLang(data));
   // The claimed one-time token rides along so the V2 webhook can mark it
