@@ -227,6 +227,13 @@ async function createCheckoutSession(secretKey, data, calc, redirect) {
   params.set('success_url', redirect.success + '?session_id={CHECKOUT_SESSION_ID}');
   params.set('cancel_url', redirect.cancel);
   params.set('customer_email', data.email);
+  // Render the Stripe page itself in the booking language. Without this
+  // Stripe defaults to 'auto' (the BROWSER's language), so a French booker on
+  // an English-locale browser got French line items on an English checkout.
+  // Catalan is not a Stripe Checkout locale, so ca falls back to Spanish --
+  // the same remap the pack checkout makes server-side.
+  const stripeLocale = { ca: 'es' }[bookingLang(data)] || bookingLang(data);
+  params.set('locale', stripeLocale);
   params.set('metadata[booking_date]', data.date);
   params.set('metadata[start_time]', data.start_time);
   params.set('metadata[duration]', data.duration);
