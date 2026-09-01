@@ -234,15 +234,18 @@
       margin-top: var(--space-xs);
     }
 
-    /* ── PIN Gate ── */
-    #pin-screen {
+    /* ── Link gate ──
+       Shown only when there is no usable personal link. There is no PIN and no
+       other way in, so this screen's whole job is to get the teacher a link:
+       one obvious action (message the school), never a dead end. */
+    #gate-screen {
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       padding: var(--space-md);
     }
-    .pin-card {
+    .gate-card {
       background: var(--sf-card);
       border-radius: var(--radius-lg);
       padding: var(--space-2xl) var(--space-xl);
@@ -251,45 +254,24 @@
       width: 100%;
       text-align: center;
     }
-    .pin-card__icon {
+    .gate-card__icon {
       font-size: 48px;
       margin-bottom: var(--space-md);
     }
-    .pin-card__title {
+    .gate-card__title {
       font-size: var(--font-size-xl);
       font-weight: 700;
       color: var(--shine-dark-teal);
       margin-bottom: var(--space-xs);
     }
-    .pin-card__subtitle {
+    .gate-card__subtitle {
       font-size: var(--font-size-sm);
       color: var(--tx-secondary);
       margin-bottom: var(--space-xl);
+      line-height: 1.5;
     }
-    .pin-input {
-      width: 100%;
-      padding: 16px;
-      font-size: var(--font-size-xl);
-      font-family: inherit;
-      text-align: center;
-      letter-spacing: 0.3em;
-      color: var(--tx-primary);
-      background: var(--sf-card);
-      border: 2px solid var(--sf-border);
-      border-radius: var(--radius-md);
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-      margin-bottom: var(--space-md);
-    }
-    .pin-input:focus {
-      border-color: var(--shine-teal);
-      box-shadow: 0 0 0 3px rgba(0, 168, 168, 0.15);
-    }
-    .pin-input.error {
-      border-color: var(--tx-error);
-      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
-    }
-    .pin-btn {
+    .gate-btn {
+      display: block;
       width: 100%;
       padding: 14px;
       font-size: var(--font-size-base);
@@ -300,30 +282,24 @@
       border: none;
       border-radius: var(--radius-md);
       cursor: pointer;
+      text-decoration: none;
       transition: all var(--transition-fast);
       box-shadow: var(--shadow-md);
     }
-    .pin-btn:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
-    .pin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .pin-error {
-      color: var(--tx-error);
-      font-size: var(--font-size-sm);
-      margin-top: var(--space-md);
-      display: none;
-    }
-    .pin-lang-toggle {
+    .gate-btn:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+    .gate-lang-toggle {
       margin-top: var(--space-xl);
       display: flex;
       justify-content: center;
     }
-    .pin-lang-toggle .sf-lang-toggle {
+    .gate-lang-toggle .sf-lang-toggle {
       position: static;
       background: rgba(0, 168, 168, 0.08);
     }
-    .pin-lang-toggle .sf-lang-btn {
+    .gate-lang-toggle .sf-lang-btn {
       color: var(--tx-secondary);
     }
-    .pin-lang-toggle .sf-lang-btn.active {
+    .gate-lang-toggle .sf-lang-btn.active {
       background: var(--shine-dark-teal);
       color: var(--tx-inverse);
     }
@@ -335,41 +311,6 @@
     }
     .shake { animation: shake 0.4s ease; }
 
-    /* ── Teacher Combobox ── */
-    .combobox-wrap {
-      position: relative;
-    }
-    .combobox-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      max-height: 240px;
-      overflow-y: auto;
-      background: var(--sf-card);
-      border: 1.5px solid var(--sf-border);
-      border-top: none;
-      border-radius: 0 0 var(--radius-md) var(--radius-md);
-      box-shadow: var(--shadow-md);
-      z-index: 50;
-      display: none;
-    }
-    .combobox-list.open { display: block; }
-    .combobox-item {
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: var(--font-size-base);
-      transition: background var(--transition-fast);
-    }
-    .combobox-item:hover, .combobox-item.highlighted {
-      background: rgba(0, 168, 168, 0.08);
-    }
-    .combobox-item mark {
-      background: rgba(0, 168, 168, 0.2);
-      color: inherit;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
 
     /* ── Section Title Row (title + same-as-before inline) ── */
     .sf-section__title-row {
@@ -1096,17 +1037,20 @@
 <body>
 
 <!-- ════════════════════════════════════════════════════════════════════════ -->
-<!-- PIN SCREEN                                                             -->
+<!-- LINK GATE — shown when there is no usable personal link.                -->
+<!-- There is NO PIN and no other way in (owner, 2026-09-01). This screen     -->
+<!-- exists only to get the teacher a link, so it offers exactly one action.  -->
 <!-- ════════════════════════════════════════════════════════════════════════ -->
-<div id="pin-screen">
-  <div class="pin-card">
-    <div class="pin-card__icon">&#127925;</div>
-    <div class="pin-card__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
-    <div class="pin-card__subtitle" data-en="Enter the access PIN to continue" data-es="Ingresa el PIN de acceso para continuar">Ingresa el PIN de acceso para continuar</div>
-    <input type="password" inputmode="numeric" class="pin-input" id="pin-input" maxlength="10" placeholder="PIN" autocomplete="off">
-    <button class="pin-btn" id="pin-btn" data-en="Enter" data-es="Entrar">Entrar</button>
-    <div class="pin-error" id="pin-error" data-en="Incorrect PIN. Please try again." data-es="PIN incorrecto. Intenta de nuevo.">PIN incorrecto. Intenta de nuevo.</div>
-    <div class="pin-lang-toggle">
+<div id="gate-screen" class="hidden">
+  <div class="gate-card">
+    <div class="gate-card__icon">&#128274;</div>
+    <div class="gate-card__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
+    <div class="gate-card__subtitle" id="gate-message"
+         data-en="This form opens with your own personal link. Look for it in your WhatsApp chat with the school, or ask us and we&rsquo;ll send you a new one."
+         data-es="Este formulario se abre con tu enlace personal. Búscalo en tu chat de WhatsApp con la escuela, o pídenos uno nuevo.">Este formulario se abre con tu enlace personal. Búscalo en tu chat de WhatsApp con la escuela, o pídenos uno nuevo.</div>
+    <a class="gate-btn" id="gate-btn" href="#" target="_blank" rel="noopener"
+       data-en="Ask the school for my link" data-es="Pedir mi enlace a la escuela">Pedir mi enlace a la escuela</a>
+    <div class="gate-lang-toggle">
       <div class="sf-lang-toggle">
         <button class="sf-lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
         <button class="sf-lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
@@ -1116,7 +1060,7 @@
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════════════ -->
-<!-- MAIN FORM (hidden until PIN is verified)                               -->
+<!-- MAIN FORM (shown once the personal link resolves)                       -->
 <!-- ════════════════════════════════════════════════════════════════════════ -->
 <div id="form-screen" class="hidden">
   <div class="sf-form">
@@ -1132,20 +1076,11 @@
       <div class="sf-header__subtitle" data-en="Update your schedule gaps and general availability" data-es="Actualiza tus huecos de horario y disponibilidad general">Actualiza tus huecos de horario y disponibilidad general</div>
     </div>
 
-    <!-- Section 1: Teacher -->
-    <div class="sf-section">
-      <div class="sf-section__title" data-en="Teacher" data-es="Profesor">Profesor</div>
-      <label class="sf-label" data-en="Your name" data-es="Tu nombre">Tu nombre</label>
-      <div class="combobox-wrap">
-        <input type="text" class="sf-input" id="teacher-input" autocomplete="off"
-               data-placeholder-en="Start typing to search..."
-               data-placeholder-es="Escribe para buscar...">
-        <div class="combobox-list" id="teacher-list"></div>
-      </div>
-      <div class="sf-error hidden" id="teacher-error" data-en="Please select a teacher" data-es="Por favor selecciona un profesor">Por favor selecciona un profesor</div>
-    </div>
+    <!-- Section 1 (Teacher picker) is GONE: the personal link already says who
+         you are, so there is nothing to choose and nothing to get wrong. The
+         name is shown in the banner rendered by showTeacherBanner(). -->
 
-    <!-- Section 1.5: Current schedule preview (read-only, populated when a teacher is picked) -->
+    <!-- Section 1.5: Current schedule, hydrated from the link's own payload -->
     <div id="current-schedule" class="current-schedule hidden" aria-live="polite"></div>
 
     <!-- Sections 2 + 3 (General Availability + Schedule Gaps) folded into the
@@ -1197,33 +1132,17 @@ const API_BASE = "https://shine-music-school.fly.dev/api/availability-form";
 // Preview mode: auto-detected when URL is not configured
 const IS_PREVIEW = API_BASE === "YOUR_API_BASE_HERE";
 
-// Demo teacher list for preview mode
-const DEMO_TEACHERS = [
-  "Alexandra Aykaeva", "Alexis Ortega", "Andrea Neuenschwander",
-  "Antonio Parraguez", "Ariel Casagrande", "Branislav Grbic",
-  "Carla Lalomia", "Cesar Munera", "Damian Lois", "Dani Pucha",
-  "Denisse Iturra", "Diego Caicedo", "Diego Quezada", "Dusan Jevtovic",
-  "Emilio Palma Vucetich", "Felipe Garcia Chacon", "Gabriela Grabowski",
-  "Gabriele Cortinovis", "Gian Carlo Scevola", "Ignacio Flores",
-  "Isidora Tealdo", "Johannes North", "Jordi Carrera", "Jose Maria Moure",
-  "Juan Carlos Buchan", "Kadija Teles", "Katarina Rudivic",
-  "Lidia Garc\u00eda Bascompta", "Lucrecia Carrizo", "Luis Cant\u00fa",
-  "Majo Vidal", "Manuela Squella", "Marcos Perez Rivero", "Mario Preciado",
-  "Matias Mu\u00f1oz", "Milos Sajin", "Natalia De La Fuente",
-  "Nikos Sachpazis", "Noelia Fern\u00e1ndez Garc\u00eda",
-  "Oscar Augusto Dur\u00e1n Guti\u00e9rrez", "Sam Russell", "Sebastian Pan",
-  "Tijana Taya", "Yoli Campos"
-];
 
 // ══════════════════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════════════════
 
 let currentLang = "es";
-let teachers = [];
 let selectedTeacher = "";
-let pin = "";
-let formToken = "";  // Phase 2: set from ?t=TOKEN (personal link); bypasses PIN + dropdown
+let formToken = "";  // from ?t=TOKEN (the personal link) — the ONLY way in
+
+// The school's own WhatsApp, for "send me my link". Same number the app uses.
+const SCHOOL_WHATSAPP = "34679572380";
 
 // Day keys and bilingual labels
 const DAYS = [
@@ -1304,149 +1223,121 @@ function switchLanguage(lang) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// PIN
+// LINK GATE
+//
+// The only screen a teacher without a working link can reach. There is no PIN
+// and no teacher dropdown any more (owner, 2026-09-01): the personal link is
+// the single way in, so each state here names what actually happened and
+// offers the one action that fixes it, rather than one dead-end error.
 // ══════════════════════════════════════════════════════════════════════════
 
-async function verifyPin() {
-  const input = document.getElementById("pin-input");
-  const btn = document.getElementById("pin-btn");
-  const error = document.getElementById("pin-error");
-  const val = input.value.trim();
+// "missing" (no link at all) | "expired" | "invalid" | "offline"
+let gateState = "missing";
 
-  if (!val) {
-    input.classList.add("error");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
-  error.style.display = "none";
-  input.classList.remove("error");
-
-  try {
-    const resp = await fetch(API_BASE + "/teachers?pin=" + encodeURIComponent(val));
-    const data = await resp.json();
-
-    if (data.error) {
-      input.classList.add("error", "shake");
-      error.style.display = "block";
-      setTimeout(() => input.classList.remove("shake"), 400);
-    } else {
-      pin = val;
-      sessionStorage.setItem("shine-avail-pin", pin);
-      teachers = data.teachers || [];
-      showForm();
+const GATE_COPY = {
+  loading: {
+    icon: "\u23F3",
+    title: { es: "Abriendo tu formulario", en: "Opening your form" },
+    body: {
+      es: "Un momento, estamos cargando tu disponibilidad\u2026",
+      en: "One moment, loading your availability\u2026"
     }
-  } catch (e) {
-    // Network error — allow offline development / fallback
-    error.style.display = "block";
-    error.textContent = currentLang === "en"
-      ? "Connection error. Check your internet."
-      : "Error de conexi\u00f3n. Verifica tu internet.";
+    // no `wa`: there is nothing to ask for yet, so no button is shown.
+  },
+  missing: {
+    icon: "\uD83D\uDD10",
+    title: { es: "Disponibilidad del Profesor", en: "Teacher Availability" },
+    body: {
+      es: "Este formulario se abre con tu enlace personal. B\u00fascalo en tu chat de WhatsApp con la escuela, o p\u00eddenos uno nuevo.",
+      en: "This form opens with your own personal link. Look for it in your WhatsApp chat with the school, or ask us and we\u2019ll send you a new one."
+    },
+    wa: {
+      es: "Hola! Necesito mi enlace para actualizar mi disponibilidad.",
+      en: "Hi! I need my link to update my availability."
+    }
+  },
+  expired: {
+    icon: "\u23F1\uFE0F",
+    title: { es: "Tu enlace ha caducado", en: "Your link has expired" },
+    body: {
+      es: "Por seguridad tu enlace personal ha caducado. P\u00eddenos uno nuevo y podr\u00e1s actualizar tu disponibilidad enseguida.",
+      en: "For security your personal link has expired. Ask us for a new one and you can update your availability right away."
+    },
+    wa: {
+      es: "Hola! Mi enlace de disponibilidad ha caducado, \u00bfme mand\u00e1is uno nuevo?",
+      en: "Hi! My availability link has expired, could you send me a new one?"
+    }
+  },
+  invalid: {
+    icon: "\uD83D\uDD17",
+    title: { es: "Este enlace ya no sirve", en: "This link no longer works" },
+    body: {
+      es: "Puede que se haya generado uno nuevo. P\u00eddenos tu enlace actual y lo arreglamos en un momento.",
+      en: "A newer one may have been issued. Ask us for your current link and we\u2019ll sort it out in a moment."
+    },
+    wa: {
+      es: "Hola! Mi enlace de disponibilidad no funciona, \u00bfme mand\u00e1is el actual?",
+      en: "Hi! My availability link isn\u2019t working, could you send me the current one?"
+    }
+  },
+  offline: {
+    icon: "\uD83D\uDCF6",
+    title: { es: "Sin conexi\u00f3n", en: "No connection" },
+    body: {
+      es: "No hemos podido conectar. Comprueba tu internet y vuelve a abrir tu enlace.",
+      en: "We couldn\u2019t connect. Check your internet and open your link again."
+    },
+    wa: {
+      es: "Hola! No consigo abrir el formulario de disponibilidad.",
+      en: "Hi! I can\u2019t open the availability form."
+    }
+  }
+};
+
+// Writes the active state's copy into the gate, keeping the data-es/data-en
+// attributes in step so switchLanguage() stays the ONE translation mechanism
+// (a second, competing one is how a half-translated screen happens).
+function renderGate() {
+  const copy = GATE_COPY[gateState] || GATE_COPY.missing;
+  const lang = currentLang === "en" ? "en" : "es";
+
+  const icon = document.querySelector(".gate-card__icon");
+  if (icon) icon.textContent = copy.icon;
+
+  const title = document.querySelector(".gate-card__title");
+  if (title) {
+    title.setAttribute("data-es", copy.title.es);
+    title.setAttribute("data-en", copy.title.en);
+    title.textContent = copy.title[lang];
   }
 
-  btn.disabled = false;
-  btn.innerHTML = currentLang === "en" ? "Enter" : "Entrar";
+  const msg = document.getElementById("gate-message");
+  if (msg) {
+    msg.setAttribute("data-es", copy.body.es);
+    msg.setAttribute("data-en", copy.body.en);
+    msg.textContent = copy.body[lang];
+  }
+
+  const btn = document.getElementById("gate-btn");
+  if (btn) {
+    if (copy.wa) {
+      btn.href = "https://wa.me/" + SCHOOL_WHATSAPP
+        + "?text=" + encodeURIComponent(copy.wa[lang]);
+      btn.classList.remove("hidden");
+    } else {
+      btn.classList.add("hidden");
+    }
+  }
 }
 
-document.getElementById("pin-btn").addEventListener("click", verifyPin);
-document.getElementById("pin-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") verifyPin();
-});
-
-// ══════════════════════════════════════════════════════════════════════════
-// TEACHER COMBOBOX
-// ══════════════════════════════════════════════════════════════════════════
-
-function initCombobox() {
-  const input = document.getElementById("teacher-input");
-  const list = document.getElementById("teacher-list");
-  let highlightIdx = -1;
-
-  function renderList(filter) {
-    const q = (filter || "").toLowerCase();
-    const matches = q
-      ? teachers.filter(t => t.toLowerCase().includes(q))
-      : teachers;
-
-    list.innerHTML = "";
-    highlightIdx = -1;
-
-    if (matches.length === 0) {
-      list.classList.remove("open");
-      return;
-    }
-
-    matches.forEach((name, i) => {
-      const div = document.createElement("div");
-      div.className = "combobox-item";
-      // Highlight matching text
-      if (q) {
-        const idx = name.toLowerCase().indexOf(q);
-        div.innerHTML = name.substring(0, idx)
-          + "<mark>" + name.substring(idx, idx + q.length) + "</mark>"
-          + name.substring(idx + q.length);
-      } else {
-        div.textContent = name;
-      }
-      div.addEventListener("mousedown", e => {
-        e.preventDefault();
-        selectTeacher(name);
-      });
-      list.appendChild(div);
-    });
-
-    list.classList.add("open");
-  }
-
-  function selectTeacher(name) {
-    input.value = name;
-    selectedTeacher = name;
-    list.classList.remove("open");
-    document.getElementById("teacher-error").classList.add("hidden");
-    loadCurrentSchedule(name);
-  }
-
-  function navigate(dir) {
-    const items = list.querySelectorAll(".combobox-item");
-    if (!items.length) return;
-    items.forEach(it => it.classList.remove("highlighted"));
-    highlightIdx = Math.max(0, Math.min(items.length - 1, highlightIdx + dir));
-    items[highlightIdx].classList.add("highlighted");
-    items[highlightIdx].scrollIntoView({ block: "nearest" });
-  }
-
-  input.addEventListener("input", () => {
-    selectedTeacher = "";
-    renderList(input.value);
-    clearCurrentSchedule();
-  });
-
-  input.addEventListener("focus", () => {
-    if (!list.classList.contains("open")) renderList(input.value);
-  });
-
-  input.addEventListener("blur", () => {
-    setTimeout(() => list.classList.remove("open"), 150);
-  });
-
-  input.addEventListener("keydown", e => {
-    if (e.key === "ArrowDown") { e.preventDefault(); navigate(1); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); navigate(-1); }
-    else if (e.key === "Enter") {
-      e.preventDefault();
-      const items = list.querySelectorAll(".combobox-item");
-      if (highlightIdx >= 0 && items[highlightIdx]) {
-        selectTeacher(items[highlightIdx].textContent);
-      } else if (items.length === 1) {
-        selectTeacher(items[0].textContent);
-      }
-    }
-    else if (e.key === "Escape") { list.classList.remove("open"); }
-  });
-
-  // Set placeholder
-  input.placeholder = currentLang === "en" ? "Start typing to search..." : "Escribe para buscar...";
+function showGate(state) {
+  gateState = state || "missing";
+  renderGate();
+  document.getElementById("gate-screen").classList.remove("hidden");
+  document.getElementById("form-screen").classList.add("hidden");
+  const fb = document.getElementById("feedback-screen");
+  if (fb) fb.classList.add("hidden");
+  window.scrollTo(0, 0);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -1944,74 +1835,29 @@ function setDayGapNote(day, note) {
   // No re-render — we'd unfocus the input; the data is captured for submit
 }
 
-async function loadCurrentSchedule(teacherName) {
-  if (!teacherName) { clearCurrentSchedule(); return; }
-
-  const myToken = ++currentScheduleToken;
-
-  // Loading shimmer
-  showCurrentScheduleState(
-    "current-schedule__loading",
-    currentLang === "en" ? "Loading your schedule…" : "Cargando tu horario…"
-  );
-
-  // Preview mode: show a synthetic example so the UI can be designed offline
-  if (IS_PREVIEW) {
-    setTimeout(() => {
-      if (myToken !== currentScheduleToken) return;
-      renderCurrentSchedule({
-        teacher: teacherName,
-        timestamp: "2026-05-01 18:24:00",
-        general: {
-          mon: "10:00-13:00 | 16:00-20:00",
-          tue: "16:00-21:00",
-          wed: "",
-          thu: "10:00-12:00 | 16:00-20:00",
-          fri: "16:00-20:00",
-          sat: "10:00-14:00"
-        },
-        urgent: {
-          mon: "",
-          tue: "18:30-19:30 (lugar disponible)",
-          wed: "",
-          thu: "",
-          fri: "",
-          sat: ""
-        },
-        holidays: ""
-      });
-    }, 220);
-    return;
-  }
-
-  try {
-    const url = API_BASE
-      + "/current?teacher=" + encodeURIComponent(teacherName)
-      + "&pin=" + encodeURIComponent(pin || "");
-    const resp = await fetch(url);
-    if (myToken !== currentScheduleToken) return; // raced — newer request supersedes
-    if (!resp.ok) {
-      showCurrentScheduleState(
-        "current-schedule__error",
-        currentLang === "en" ? "Couldn’t load your current schedule." : "No se pudo cargar tu horario actual."
-      );
-      return;
-    }
-    const data = await resp.json();
-    if (myToken !== currentScheduleToken) return;
-    if (data && data.error) {
-      showCurrentScheduleState("current-schedule__error", data.error);
-      return;
-    }
-    renderCurrentSchedule(data);
-  } catch (err) {
-    if (myToken !== currentScheduleToken) return;
-    showCurrentScheduleState(
-      "current-schedule__error",
-      currentLang === "en" ? "Network error loading your schedule." : "Error de red al cargar tu horario."
-    );
-  }
-}
+// The demo grid used by preview mode (no backend). Lifted out of the deleted
+// loadCurrentSchedule(), whose only caller was the teacher dropdown.
+const DEMO_SCHEDULE = {
+  teacher: "Profe de Prueba",
+  timestamp: "2026-05-01 18:24:00",
+  general: {
+    mon: "10:00-13:00 | 16:00-20:00",
+    tue: "16:00-21:00",
+    wed: "",
+    thu: "10:00-12:00 | 16:00-20:00",
+    fri: "16:00-20:00",
+    sat: "10:00-14:00"
+  },
+  urgent: {
+    mon: "",
+    tue: "18:30-19:30 (lugar disponible)",
+    wed: "",
+    thu: "",
+    fri: "",
+    sat: ""
+  },
+  holidays: ""
+};
 
 // ══════════════════════════════════════════════════════════════════════════
 // HOLIDAYS
@@ -2070,45 +1916,50 @@ function addHolidayEntry() {
 // ══════════════════════════════════════════════════════════════════════════
 
 function showForm() {
-  document.getElementById("pin-screen").classList.add("hidden");
+  document.getElementById("gate-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
   document.getElementById("feedback-screen").classList.add("hidden");
-  initCombobox();
   switchLanguage(currentLang);
 }
 
-// Phase 2: enter straight into the form from a personal ?t=TOKEN link.
-// The token both identifies the teacher and authorizes the request (no PIN,
-// no dropdown). On a bad/expired token we clear it and fall through to the
-// normal PIN screen.
+// Enter the form from a personal ?t=TOKEN link. The token both identifies the
+// teacher and authorizes the request; there is no PIN and no other way in, so
+// every failure lands on the gate with a state that says what to do next.
 async function enterWithToken() {
+  let data;
   try {
     const resp = await fetch(API_BASE + "/current?t=" + encodeURIComponent(formToken));
-    const data = await resp.json();
-    if (!resp.ok || !data || data.error || !data.teacher) {
-      formToken = "";
-      localStorage.removeItem("shine-avail-token");  // bad/expired link -> forget it
-      return;
-    }
-    // Remember this token on the device so the PLAIN url works next time (no
-    // PIN, no need to keep the long link). Cleared by "Not you?" or a bad token.
-    localStorage.setItem("shine-avail-token", formToken);
-    selectedTeacher = data.teacher;
-    showForm();
-    lockTeacherToToken(data.teacher);
-    renderCurrentSchedule(data);  // hydrate the editor from the same payload
+    data = await resp.json();
   } catch (e) {
-    formToken = "";  // network error -> keep any saved token, fall back to PIN
+    // Network error: do NOT forget the token. The link is probably fine and the
+    // phone is not; discarding it here would strand a teacher who is merely on
+    // a bad connection, and she has no PIN to fall back on.
+    showGate("offline");
+    return;
   }
+
+  if (!data || data.error || !data.teacher) {
+    // "expired" and "invalid" are distinguished by the server so the gate can
+    // tell a lapsed link from one that was rotated away.
+    const reason = (data && data.reason === "expired") ? "expired" : "invalid";
+    formToken = "";
+    localStorage.removeItem("shine-avail-token");  // dead link -> stop retrying it
+    showGate(reason);
+    return;
+  }
+
+  // Remember the token on this device so the PLAIN url works next time and the
+  // teacher does not have to dig the long link out of WhatsApp again.
+  localStorage.setItem("shine-avail-token", formToken);
+  selectedTeacher = data.teacher;
+  showForm();
+  showTeacherBanner(data.teacher);
+  renderCurrentSchedule(data);  // hydrate the editor from the same payload
 }
 
-// Hide the teacher picker (identity is fixed by the link) and show whose
-// availability this is, above the form.
-function lockTeacherToToken(name) {
-  const input = document.getElementById("teacher-input");
-  const section = input ? input.closest(".sf-section") : null;
-  if (section) section.style.display = "none";
-  if (input) input.value = name;
+// Show whose availability this is. There is no picker any more, so this banner
+// is the only thing telling the teacher the link opened as the right person.
+function showTeacherBanner(name) {
   let banner = document.getElementById("token-teacher-banner");
   if (!banner) {
     banner = document.createElement("div");
@@ -2121,15 +1972,17 @@ function lockTeacherToToken(name) {
   const title = document.createElement("span");
   title.style.cssText = "font-weight:700;font-size:1.15rem;color:#03444A;";
   title.textContent = (currentLang === "en" ? "Availability for " : "Disponibilidad de ") + name;
-  // "Not you? Switch" — for a shared device: forget the saved link, go to PIN.
+  // Shared device: forget the saved link and go back to the gate.
   const sw = document.createElement("a");
   sw.href = "#";
   sw.style.cssText = "font-size:0.8rem;color:#999;margin-left:10px;white-space:nowrap;";
-  sw.textContent = currentLang === "en" ? "Not you? Switch" : "¿No eres tú? Cambiar";
+  sw.textContent = currentLang === "en" ? "Not you? Switch" : "\u00bfNo eres t\u00fa? Cambiar";
   sw.addEventListener("click", (e) => {
     e.preventDefault();
     localStorage.removeItem("shine-avail-token");
-    window.location.href = window.location.pathname;  // plain url -> PIN screen
+    formToken = "";
+    selectedTeacher = "";
+    showGate("missing");
   });
   banner.appendChild(title);
   banner.appendChild(sw);
@@ -2138,8 +1991,8 @@ function lockTeacherToToken(name) {
 function resetForm() {
   document.getElementById("feedback-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
-  selectedTeacher = "";
-  document.getElementById("teacher-input").value = "";
+  // selectedTeacher is NOT cleared: it comes from the link, not a picker, and
+  // the teacher is still the same person after saving.
   document.getElementById("holiday-entries").innerHTML = "";
   clearCurrentSchedule();
   switchLanguage(currentLang);
@@ -2151,9 +2004,9 @@ function resetForm() {
 // ══════════════════════════════════════════════════════════════════════════
 
 function collectData() {
-  if (!selectedTeacher) {
-    document.getElementById("teacher-error").classList.remove("hidden");
-    document.getElementById("teacher-input").focus();
+  if (!selectedTeacher || !formToken) {
+    // Identity comes from the link, so losing it means the link stopped working.
+    showGate("invalid");
     return null;
   }
   if (!editorState || !originalState) {
@@ -2200,9 +2053,9 @@ function collectData() {
     }
   });
 
-  return formToken
-    ? { token: formToken, general, urgent, holidays }
-    : { pin, teacher: selectedTeacher, general, urgent, holidays };
+  // Token only. The server pins the write to the link's owner, so no teacher
+  // name is sent and none could redirect it anyway.
+  return { token: formToken, general, urgent, holidays };
 }
 
 function slotsEqualGeneral(a, b) {
@@ -2306,54 +2159,42 @@ function showFeedback(type, detail) {
   if (savedLang === "en" || savedLang === "es") currentLang = savedLang;
   switchLanguage(currentLang);
 
-  // Preview mode: skip PIN, use demo teachers
+  // Preview mode: no backend, so fake a resolved link and show the demo grid.
   if (IS_PREVIEW) {
-    // Add preview banner
     const banner = document.createElement("div");
     banner.className = "preview-banner";
-    banner.textContent = "\u26a0 PREVIEW MODE — Apps Script URL not configured";
+    banner.textContent = "\u26a0 PREVIEW MODE \u2014 backend URL not configured";
     document.body.prepend(banner);
 
-    pin = "preview";
-    teachers = DEMO_TEACHERS;
+    formToken = "preview";
+    selectedTeacher = DEMO_SCHEDULE.teacher;
     showForm();
+    showTeacherBanner(DEMO_SCHEDULE.teacher);
+    renderCurrentSchedule(DEMO_SCHEDULE);
     return;
   }
 
-  // Phase 2: personal link (?t=TOKEN) skips the PIN + dropdown, loads that teacher.
+  // The personal link. This is the ONLY way in.
   const urlToken = new URLSearchParams(window.location.search).get("t");
   if (urlToken) {
     formToken = urlToken;
+    showGate("loading");
     enterWithToken();
     return;
   }
 
-  // Remembered link: a token saved on this device the first time the teacher
-  // opened their personal link, so the PLAIN url goes straight in (no PIN).
+  // A link this device has opened before, so the PLAIN url still works and the
+  // teacher does not have to find the long link in WhatsApp every time.
   const savedToken = localStorage.getItem("shine-avail-token");
   if (savedToken) {
     formToken = savedToken;
+    showGate("loading");
     enterWithToken();
     return;
   }
 
-  // Check for cached PIN
-  const cachedPin = sessionStorage.getItem("shine-avail-pin");
-  if (cachedPin) {
-    // Try to validate the cached PIN by fetching teachers
-    pin = cachedPin;
-    fetch(API_BASE + "/teachers?pin=" + encodeURIComponent(cachedPin))
-      .then(r => r.json())
-      .then(data => {
-        if (data.teachers) {
-          teachers = data.teachers;
-          showForm();
-        }
-      })
-      .catch(() => {
-        // PIN expired or network error — show PIN screen
-      });
-  }
+  // No link at all: say so, and offer the one thing that fixes it.
+  showGate("missing");
 })();
 </script>
 
