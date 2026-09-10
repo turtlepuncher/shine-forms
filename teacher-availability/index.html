@@ -377,6 +377,79 @@
       display: none;
     }
 
+
+    /* ── Tabs + Mis combos (2026-09-10) ───────────────────────────────── */
+    .sf-tabs {
+      display: flex; gap: 4px; padding: 0 0 4px;
+      border-bottom: 2px solid #e2e8f0; margin-bottom: 20px;
+    }
+    .sf-tab {
+      appearance: none; background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 15px; font-weight: 700; color: #64748b;
+      padding: 10px 16px; border-radius: 8px 8px 0 0; margin-bottom: -2px;
+      border-bottom: 3px solid transparent;
+    }
+    .sf-tab:hover { color: #0f766e; background: #f1f5f9; }
+    .sf-tab.is-active { color: #0f766e; border-bottom-color: #0f766e; }
+
+    .combos-list { display: flex; flex-direction: column; gap: 16px; }
+    .combo-card {
+      border: 1px solid #cbd5e1; border-radius: 12px; padding: 14px;
+      background: #fff;
+    }
+    .combo-card__top { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .combo-card__name {
+      flex: 1 1 220px; min-width: 180px; font-weight: 700; font-size: 16px;
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-family: inherit;
+    }
+    .combo-when { display: flex; gap: 8px; align-items: center; }
+    .combo-when select, .combo-when input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-family: inherit; font-size: 14px;
+    }
+    .combo-members { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .combo-member {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      padding: 8px; border-radius: 8px; background: #f8fafc;
+    }
+    .combo-member.is-removed { opacity: .45; text-decoration: line-through; }
+    .combo-member__name {
+      flex: 1 1 160px; min-width: 140px; font-weight: 600; font-size: 14px;
+      padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px;
+      font-family: inherit; background: #fff;
+    }
+    .combo-member__name[readonly] { background: transparent; border-color: transparent; }
+    .combo-member__inst {
+      flex: 0 1 150px; min-width: 120px; font-size: 14px;
+      padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px;
+      font-family: inherit; background: #fff;
+    }
+    .combo-member__x {
+      appearance: none; border: 1px solid #fecaca; background: #fef2f2;
+      color: #b91c1c; width: 30px; height: 30px; border-radius: 8px;
+      font-size: 16px; font-weight: 700; cursor: pointer; line-height: 1;
+    }
+    .combo-member__x:hover { background: #fee2e2; }
+    .combo-member__undo {
+      appearance: none; border: 1px solid #cbd5e1; background: #fff;
+      color: #475569; padding: 4px 10px; border-radius: 8px; font-size: 12px;
+      cursor: pointer; font-family: inherit;
+    }
+    .combo-new {
+      appearance: none; border: 1px dashed #94a3b8; background: #fff;
+      color: #0f766e; padding: 8px 12px; border-radius: 8px; font-weight: 600;
+      font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 10px;
+      align-self: flex-start;
+    }
+    .combo-new:hover { background: #f0fdfa; }
+    .combo-tag {
+      font-size: 11px; font-weight: 700; letter-spacing: .04em;
+      color: #92400e; background: #fef3c7; border-radius: 999px;
+      padding: 2px 8px; white-space: nowrap;
+    }
+    .combos-empty { color: #64748b; font-size: 14px; padding: 10px 0; }
+
     /* ── Current Schedule Preview (Phase A read-only calendar) ── */
     .current-schedule {
       background: var(--sf-card);
@@ -1071,7 +1144,7 @@
         <button class="sf-lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
         <button class="sf-lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
       </div>
-      <img src="img/logo.png" alt="Shine Music School" class="sf-header__logo">
+      <img src="/img/logo.png" alt="Shine Music School" class="sf-header__logo">
       <div class="sf-header__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
       <div class="sf-header__subtitle" data-en="Update your schedule gaps and general availability" data-es="Actualiza tus huecos de horario y disponibilidad general">Actualiza tus huecos de horario y disponibilidad general</div>
     </div>
@@ -1079,6 +1152,20 @@
     <!-- Section 1 (Teacher picker) is GONE: the personal link already says who
          you are, so there is nothing to choose and nothing to get wrong. The
          name is shown in the banner rendered by showTeacherBanner(). -->
+
+
+    <!-- Tabs. The combos one only exists for a teacher who leads combos, so
+         everybody else sees the form exactly as before (owner 2026-09-10). -->
+    <div class="sf-tabs" id="sf-tabs" hidden>
+      <button type="button" class="sf-tab is-active" id="tab-availability"
+              onclick="showTab('availability')"
+              data-en="Availability" data-es="Disponibilidad">Disponibilidad</button>
+      <button type="button" class="sf-tab" id="tab-combos"
+              onclick="showTab('combos')"
+              data-en="My combos" data-es="Mis combos">Mis combos</button>
+    </div>
+
+    <div id="pane-availability">
 
     <!-- Section 1.5: Current schedule, hydrated from the link's own payload -->
     <div id="current-schedule" class="current-schedule hidden" aria-live="polite"></div>
@@ -1102,6 +1189,29 @@
     <button class="sf-submit" id="submit-btn" onclick="submitForm()">
       <span data-en="Save Availability" data-es="Guardar Disponibilidad">Guardar Disponibilidad</span>
     </button>
+
+    </div><!-- /pane-availability -->
+
+    <!-- ── MIS COMBOS ────────────────────────────────────────────────────
+         Only his own combos, pulled live from the panel. He can rename,
+         move the day and time, take out students who are not there, set an
+         instrument, and type in new names. He cannot delete a combo: an
+         empty combo is fine and the school decides what happens to it. -->
+    <div id="pane-combos" class="hidden">
+      <div class="sf-section">
+        <div class="sf-section__title">
+          <span data-en="Your combos and group classes"
+                data-es="Tus combos y clases grupales">Tus combos y clases grupales</span>
+        </div>
+        <div class="sf-description"
+             data-en="This is what the school has on file right now. Fix it: take out anyone who is not coming, add anyone new by typing their name, set what each person plays, and adjust the day and time. Then save."
+             data-es="Esto es lo que la escuela tiene ahora mismo. Corr&iacute;gelo: quita a quien no viene, a&ntilde;ade a los nuevos escribiendo su nombre, indica qu&eacute; toca cada uno y ajusta el d&iacute;a y la hora. Luego guarda.">Esto es lo que la escuela tiene ahora mismo. Corr&iacute;gelo: quita a quien no viene, a&ntilde;ade a los nuevos escribiendo su nombre, indica qu&eacute; toca cada uno y ajusta el d&iacute;a y la hora. Luego guarda.</div>
+        <div id="combos-list" class="combos-list"></div>
+      </div>
+      <button class="sf-submit" id="combos-submit-btn" onclick="submitCombos()">
+        <span data-en="Save combos" data-es="Guardar combos">Guardar combos</span>
+      </button>
+    </div>
 
   </div>
 </div>
@@ -1127,7 +1237,7 @@
 
 // V2 backend (direct write). Was the Google Apps Script + Sheet relay; now
 // points at the FastAPI availability-form endpoints (no Google Sheet in path).
-const API_BASE = "https://shine-music-school.fly.dev/api/availability-form";
+const API_BASE = "https://panel.shinemusicschool.es/api/availability-form";
 
 // Preview mode: auto-detected when URL is not configured
 const IS_PREVIEW = API_BASE === "YOUR_API_BASE_HERE";
@@ -1955,6 +2065,220 @@ async function enterWithToken() {
   showForm();
   showTeacherBanner(data.teacher);
   renderCurrentSchedule(data);  // hydrate the editor from the same payload
+  loadCombos();                 // the tab appears only if she leads any
+}
+
+// ── MIS COMBOS ─────────────────────────────────────────────────────────────
+// Owner 2026-09-10: "diego opens his form, navigates to combos, ONLY HIS
+// combos show... removes any students that are not there, adjusts time and day
+// of combo, adds any new ones (by typing string name) and assigns them an
+// instrument, renames if he wants, and saves."
+//
+// The server decides which combos are his, from the same token. This file only
+// draws what it is handed.
+let combosData = [];
+
+const DAY_NAMES = {
+  es: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+  en: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+};
+
+function showTab(which) {
+  const isCombos = which === "combos";
+  document.getElementById("pane-availability").classList.toggle("hidden", isCombos);
+  document.getElementById("pane-combos").classList.toggle("hidden", !isCombos);
+  document.getElementById("tab-availability").classList.toggle("is-active", !isCombos);
+  document.getElementById("tab-combos").classList.toggle("is-active", isCombos);
+}
+
+async function loadCombos() {
+  try {
+    const resp = await fetch(API_BASE + "/combos?t=" + encodeURIComponent(formToken));
+    const data = await resp.json();
+    // No combos is the normal case for most teachers: leave the tab hidden and
+    // the form is exactly what it always was.
+    if (!data || data.error || !Array.isArray(data.combos) || !data.combos.length) return;
+    combosData = data.combos;
+    document.getElementById("sf-tabs").hidden = false;
+    renderCombos();
+    switchLanguage(currentLang);
+  } catch (e) {
+    // A combos fetch that fails must never cost her the availability form.
+  }
+}
+
+function renderCombos() {
+  const host = document.getElementById("combos-list");
+  host.textContent = "";
+  combosData.forEach((combo, ci) => {
+    const card = document.createElement("div");
+    card.className = "combo-card";
+
+    const top = document.createElement("div");
+    top.className = "combo-card__top";
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "combo-card__name";
+    nameInput.value = combo.name || "";
+    nameInput.oninput = () => { combo.name = nameInput.value; };
+    top.appendChild(nameInput);
+
+    const when = document.createElement("div");
+    when.className = "combo-when";
+    const daySel = document.createElement("select");
+    (DAY_NAMES[currentLang] || DAY_NAMES.es).forEach((label, idx) => {
+      const opt = document.createElement("option");
+      opt.value = String(idx);
+      opt.textContent = label;
+      if (combo.day_of_week === idx) opt.selected = true;
+      daySel.appendChild(opt);
+    });
+    daySel.onchange = () => { combo.day_of_week = parseInt(daySel.value, 10); };
+    when.appendChild(daySel);
+
+    const timeInput = document.createElement("input");
+    timeInput.type = "time";
+    timeInput.value = combo.start_time || "";
+    timeInput.oninput = () => { combo.start_time = timeInput.value; };
+    when.appendChild(timeInput);
+    top.appendChild(when);
+    card.appendChild(top);
+
+    const members = document.createElement("div");
+    members.className = "combo-members";
+    combo.members.forEach((m) => members.appendChild(memberRow(combo, m)));
+    card.appendChild(members);
+
+    const add = document.createElement("button");
+    add.type = "button";
+    add.className = "combo-new";
+    add.dataset.en = "+ Add student";
+    add.dataset.es = "+ Añadir alumno";
+    add.textContent = currentLang === "en" ? "+ Add student" : "+ Añadir alumno";
+    add.onclick = () => {
+      combo.members.push({ kind: "placeholder", id: null, name: "", instrument: "", _new: true });
+      renderCombos();
+      switchLanguage(currentLang);
+      // Focus the name we just made, which is the last one in this card.
+      const inputs = host.children[ci].querySelectorAll(".combo-member__name");
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    };
+    card.appendChild(add);
+
+    host.appendChild(card);
+  });
+}
+
+function memberRow(combo, m) {
+  const row = document.createElement("div");
+  row.className = "combo-member" + (m.removed ? " is-removed" : "");
+
+  const name = document.createElement("input");
+  name.type = "text";
+  name.className = "combo-member__name";
+  name.value = m.name || "";
+  // A real student's name belongs to the office. The teacher can take them out
+  // of the combo and say what they play; renaming a person is not her call.
+  if (m.kind === "member") {
+    name.readOnly = true;
+  } else {
+    name.placeholder = currentLang === "en" ? "Name" : "Nombre";
+    name.dataset.placeholderEn = "Name";
+    name.dataset.placeholderEs = "Nombre";
+    name.oninput = () => { m.name = name.value; };
+  }
+  row.appendChild(name);
+
+  const inst = document.createElement("input");
+  inst.type = "text";
+  inst.className = "combo-member__inst";
+  inst.value = m.instrument || "";
+  inst.placeholder = currentLang === "en" ? "Instrument" : "Instrumento";
+  inst.dataset.placeholderEn = "Instrument";
+  inst.dataset.placeholderEs = "Instrumento";
+  inst.oninput = () => { m.instrument = inst.value; };
+  row.appendChild(inst);
+
+  if (m.kind === "placeholder" && !m._new) {
+    const tag = document.createElement("span");
+    tag.className = "combo-tag";
+    tag.dataset.en = "PENDING";
+    tag.dataset.es = "POR CONFIRMAR";
+    tag.textContent = currentLang === "en" ? "PENDING" : "POR CONFIRMAR";
+    row.appendChild(tag);
+  }
+
+  if (m.removed) {
+    const undo = document.createElement("button");
+    undo.type = "button";
+    undo.className = "combo-member__undo";
+    undo.dataset.en = "Undo";
+    undo.dataset.es = "Deshacer";
+    undo.textContent = currentLang === "en" ? "Undo" : "Deshacer";
+    undo.onclick = () => { m.removed = false; renderCombos(); switchLanguage(currentLang); };
+    row.appendChild(undo);
+  } else {
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "combo-member__x";
+    x.setAttribute("aria-label", currentLang === "en" ? "Remove" : "Quitar");
+    x.textContent = "\u00d7";
+    x.onclick = () => {
+      // A brand-new typed row just disappears; a saved one is marked so the
+      // save can tell the server to take them out, and can be undone first.
+      if (m._new) {
+        combo.members.splice(combo.members.indexOf(m), 1);
+      } else {
+        m.removed = true;
+      }
+      renderCombos();
+      switchLanguage(currentLang);
+    };
+    row.appendChild(x);
+  }
+  return row;
+}
+
+async function submitCombos() {
+  const btn = document.getElementById("combos-submit-btn");
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = currentLang === "en" ? "Saving..." : "Guardando...";
+  try {
+    const resp = await fetch(API_BASE + "/combos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: formToken,
+        combos: combosData.map((c) => ({
+          id: c.id,
+          name: c.name,
+          day_of_week: c.day_of_week,
+          start_time: c.start_time,
+          members: c.members
+            // A row that was typed and then emptied is nothing at all.
+            .filter((m) => m.id || (m.name || "").trim())
+            .map((m) => ({
+              kind: m.kind, id: m.id, name: m.name,
+              instrument: m.instrument, removed: !!m.removed,
+            })),
+        })),
+      }),
+    });
+    const data = await resp.json();
+    if (!data || data.error) throw new Error(data && data.error);
+    // Re-read rather than trust the local copy: the typed names now have real
+    // ids, and the removed ones are gone for good.
+    await loadCombos();
+    showTab("combos");
+    btn.textContent = currentLang === "en" ? "Saved" : "Guardado";
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1800);
+  } catch (e) {
+    btn.textContent = currentLang === "en"
+      ? "Could not save, try again" : "No se pudo guardar, int\u00e9ntalo otra vez";
+    btn.disabled = false;
+  }
 }
 
 // Show whose availability this is. There is no picker any more, so this banner
