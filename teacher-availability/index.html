@@ -100,7 +100,13 @@
       width: 80px;
       height: auto;
       margin-bottom: var(--space-md);
-      filter: brightness(0) invert(1);
+      /* NO FILTER. The mark is a black plectrum with the white "shine"
+         wordmark inside it, and brightness(0) crushed EVERY colour to black,
+         wordmark included, before invert(1) turned the lot white: a blank
+         white pick. It read as "the logo is broken" for as long as the file
+         404d, and then for a while afterwards (owner, 2026-09-10: "pick logo
+         is still no rendering"). The real mark reads perfectly well on the
+         dark teal; the honest thing is to show it rather than process it. */
       opacity: 0.95;
     }
     .sf-header__title {
