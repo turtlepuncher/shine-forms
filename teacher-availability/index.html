@@ -120,6 +120,12 @@
       opacity: 0.85;
       font-weight: 400;
     }
+    .sf-header__app-hint {
+      font-size: var(--font-size-xs);
+      opacity: 0.65;
+      font-weight: 400;
+      margin-top: var(--space-xs);
+    }
 
     /* ── Language Toggle ── */
     .sf-lang-toggle {
@@ -1228,6 +1234,7 @@
       <img src="/img/logo.png" alt="Shine Music School" class="sf-header__logo">
       <div class="sf-header__title" data-en="Teacher Availability" data-es="Disponibilidad del Profesor">Disponibilidad del Profesor</div>
       <div class="sf-header__subtitle" data-en="Update your schedule gaps and general availability" data-es="Actualiza tus huecos de horario y disponibilidad general">Actualiza tus huecos de horario y disponibilidad general</div>
+      <div class="sf-header__app-hint" data-en="If you have the Shine app, this is also under My profile." data-es="Si tienes la app Shine, esto mismo est&aacute; en Mi perfil.">Si tienes la app Shine, esto mismo est&aacute; en Mi perfil.</div>
     </div>
 
     <!-- Section 1 (Teacher picker) is GONE: the personal link already says who
@@ -1574,6 +1581,9 @@ let dragSession = null;
 // Currently selected slot for the inline from/to editor - { day, mode, index } or null.
 // Survives renderCurrentSchedule() because render reads this module variable back.
 let editorSelection = null;
+// Holiday entries loaded from the server that matched neither known dialect,
+// kept verbatim so a save never drops them. See hydrateHolidays()/collectData().
+let preservedHolidayText = [];
 
 // === Time helpers ===
 function timeStringToMinutes(t) {
@@ -1771,6 +1781,15 @@ function renderCurrentSchedule(data) {
       tsLabel = (currentLang === "en"
         ? `Last updated ${dayNum} ${monthName} · ${m[4]}:${m[5]}`
         : `Actualizado el ${dayNum} ${monthName} · ${m[4]}:${m[5]}`);
+      // Where the last save came from. Any value other than these three
+      // (or a missing one) leaves the line exactly as it was before.
+      const src = currentScheduleData.source;
+      const sourceSuffix = {
+        app: { en: " from the app", es: " desde la app" },
+        link: { en: " from the link", es: " desde el enlace" },
+        panel: { en: " by the office", es: " por la oficina" },
+      }[src];
+      if (sourceSuffix) tsLabel += sourceSuffix[currentLang];
     }
   }
 
@@ -1821,7 +1840,7 @@ function renderCurrentSchedule(data) {
     const dayActionBtnHtml = slotsInActiveMode.length > 0
       ? `<button type="button" class="day-clear-btn" data-day="${day}" title="${
           currentLang === 'en' ? 'Clear this day in current paint mode' : 'Borrar este día en el modo activo'
-        }">${currentLang === 'en' ? 'Clear' : 'Borrar'}</button>`
+        }">${currentLang === 'en' ? 'Clear the day' : 'Borrar el día'}</button>`
       : `<button type="button" class="day-add-btn" data-day="${day}">${
           currentEditorMode === 'urgent'
             ? (currentLang === 'en' ? '+ Add gap' : '+ Añadir hueco')
@@ -2184,6 +2203,79 @@ const DEMO_SCHEDULE = {
 // HOLIDAYS
 // ══════════════════════════════════════════════════════════════════════════
 
+function pad2(n) { return String(n).padStart(2, "0"); }
+
+// Splits the trailing " (note)" off a holiday entry, same convention as
+// parseSlotString() above.
+function splitHolidayNote(piece) {
+  const noteMatch = piece.match(/\(([^)]*)\)\s*$/);
+  const note = noteMatch ? noteMatch[1].trim() : "";
+  const range = (noteMatch ? piece.replace(noteMatch[0], "") : piece).trim();
+  return { range, note };
+}
+
+// Dialect A: what this form's own submits produce server-side -
+// "YYYY-MM-DD", optionally " to YYYY-MM-DD".
+function parseIsoHolidayRange(range) {
+  const m = /^(\d{4}-\d{2}-\d{2})(?:\s+to\s+(\d{4}-\d{2}-\d{2}))?$/.exec(range);
+  if (!m) return null;
+  return { from: m[1], to: m[2] || m[1] };
+}
+
+// Dialect B: what the mobile app has been writing until now -
+// "dd/mm/yyyy", optionally " a dd/mm/yyyy" / " to dd/mm/yyyy" / " - dd/mm/yyyy".
+function parseAppHolidayRange(range) {
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(?:a|to|-)\s+(\d{1,2})\/(\d{1,2})\/(\d{4}))?$/.exec(range);
+  if (!m) return null;
+  const from = `${m[3]}-${pad2(m[2])}-${pad2(m[1])}`;
+  const to = m[4] ? `${m[6]}-${pad2(m[5])}-${pad2(m[4])}` : from;
+  return { from, to };
+}
+
+// Parses the stored holidays string ("entry | entry | ...") into per-entry
+// {from, to, note} for the two known dialects. An entry that matches neither
+// is kept verbatim in `preserved` so a save never drops it (see collectData()).
+function parseHolidaysString(raw) {
+  const parsed = [];
+  const preserved = [];
+  if (!raw) return { parsed, preserved };
+  String(raw).split("|").map(p => p.trim()).filter(Boolean).forEach(piece => {
+    const { range, note } = splitHolidayNote(piece);
+    const hit = parseIsoHolidayRange(range) || parseAppHolidayRange(range);
+    if (hit) {
+      parsed.push({ from: hit.from, to: hit.to, note });
+    } else {
+      preserved.push(piece);
+    }
+  });
+  return { parsed, preserved };
+}
+
+// Clears the holiday section, then hydrates it from data.holidays (a string,
+// entries joined by " | " - see the server's _render_holidays). Any entry
+// that cannot be parsed into two date inputs is kept in preservedHolidayText
+// so collectData() still sends it back untouched. Safe to call repeatedly
+// (teacher switch, reload): it always clears first, so nothing duplicates.
+function hydrateHolidays(data) {
+  const wrap = document.getElementById("holiday-entries");
+  wrap.innerHTML = "";
+  preservedHolidayText = [];
+  const raw = data && data.holidays;
+  if (!raw) return;
+  const { parsed, preserved } = parseHolidaysString(raw);
+  parsed.forEach(h => {
+    addHolidayEntry();
+    const entry = wrap.lastElementChild;
+    if (!entry) return;
+    const dates = entry.querySelectorAll("input[type='date']");
+    if (dates[0]) dates[0].value = h.from;
+    if (dates[1]) dates[1].value = h.to;
+    const noteInput = entry.querySelector(".holiday-note");
+    if (noteInput) noteInput.value = h.note || "";
+  });
+  preservedHolidayText = preserved;
+}
+
 function addHolidayEntry() {
   const wrap = document.getElementById("holiday-entries");
   const entry = document.createElement("div");
@@ -2276,6 +2368,7 @@ async function enterWithToken() {
   showForm();
   showTeacherBanner(data.teacher);
   renderCurrentSchedule(data);  // hydrate the editor from the same payload
+  hydrateHolidays(data);        // hydrate the holidays section from the same payload
   loadCombos();                 // the tab appears only if she leads any
 }
 
@@ -2529,6 +2622,7 @@ function resetForm() {
   // selectedTeacher is NOT cleared: it comes from the link, not a picker, and
   // the teacher is still the same person after saving.
   document.getElementById("holiday-entries").innerHTML = "";
+  preservedHolidayText = [];
   clearCurrentSchedule();
   switchLanguage(currentLang);
   window.scrollTo(0, 0);
@@ -2587,6 +2681,10 @@ function collectData() {
       });
     }
   });
+  // Entries loaded from the server that matched neither known dialect: kept
+  // verbatim so a save never drops them (the server accepts plain strings
+  // in this list and re-renders them as-is).
+  preservedHolidayText.forEach(text => holidays.push(text));
 
   // Token only. The server pins the write to the link's owner, so no teacher
   // name is sent and none could redirect it anyway.
