@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shine — Teacher Availability</title>
+  <title>Shine - Teacher Availability</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -568,7 +568,7 @@
         ),
         #EEF3F4;
       border-radius: 6px;
-      /* No overflow: hidden — would clip the floating drag tooltip that
+      /* No overflow: hidden - would clip the floating drag tooltip that
          sits above the bar. Segments inside the bar use their own
          border-radius and percent-based widths, so they never exceed the
          bar's bounds anyway. */
@@ -587,6 +587,10 @@
     .current-schedule__segment--urgent {
       background: var(--shine-orange);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .current-schedule__segment--selected {
+      outline: 2px solid var(--shine-dark-teal);
+      outline-offset: 1px;
     }
     .current-schedule__day-text {
       grid-column: 2;
@@ -639,7 +643,7 @@
       top: 4px;
     }
 
-    /* ── Floating "HH:MM – HH:MM" tooltip shown while dragging on a bar ── */
+    /* ── Floating "HH:MM - HH:MM" tooltip shown while dragging on a bar ── */
     .current-schedule__preview-label {
       position: absolute;
       bottom: calc(100% + 6px);
@@ -666,7 +670,7 @@
       border-top-color: var(--shine-dark-teal);
     }
 
-    /* ── Editor mode — appended in Phase B ── */
+    /* ── Editor mode - appended in Phase B ── */
     .editor-mode-row {
       display: flex;
       gap: 8px;
@@ -719,7 +723,7 @@
     .current-schedule__bar--editable.is-painting-urgent {
       cursor: copy;
     }
-    /* Drag preview — semi-transparent ghost segment shown while painting */
+    /* Drag preview - semi-transparent ghost segment shown while painting */
     .current-schedule__preview {
       position: absolute;
       top: 2px;
@@ -733,7 +737,7 @@
     .current-schedule__preview--general { background: var(--shine-green); }
     .current-schedule__preview--urgent  { background: var(--shine-orange); }
 
-    /* Per-day "clear day" button — small unobtrusive trash icon */
+    /* Per-day "clear day" button - small unobtrusive trash icon */
     .day-clear-btn {
       grid-column: 2;
       justify-self: end;
@@ -748,6 +752,77 @@
       margin-top: -2px;
     }
     .day-clear-btn:hover { background: var(--sf-bg); color: var(--tx-error); }
+
+    /* Per-day "add slot" button - takes the clear button's place when the
+       active mode has no slots yet for that day */
+    .day-add-btn {
+      grid-column: 2;
+      justify-self: end;
+      background: transparent;
+      border: 1px dashed var(--tx-placeholder);
+      color: var(--tx-placeholder);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: -2px;
+    }
+    .day-add-btn:hover { background: var(--sf-bg); color: var(--shine-teal); border-color: var(--shine-teal); }
+
+    /* Inline from/to editor for the selected slot, shown below the bar */
+    .slot-editor {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .slot-editor__label {
+      font-size: var(--font-size-xs);
+      color: var(--tx-secondary);
+      font-weight: 600;
+    }
+    .slot-editor__from,
+    .slot-editor__to {
+      min-height: 44px;
+      font-size: 16px;
+      padding: 6px 10px;
+      border: 1px solid var(--sf-border);
+      border-radius: 4px;
+      background: var(--sf-card);
+      color: var(--tx-primary);
+      box-sizing: border-box;
+    }
+    .slot-editor__from:focus,
+    .slot-editor__to:focus {
+      outline: none;
+      border-color: var(--shine-orange);
+      box-shadow: 0 0 0 2px rgba(255, 140, 60, 0.15);
+    }
+    .slot-editor__delete {
+      background: transparent;
+      border: none;
+      color: var(--tx-placeholder);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .slot-editor__delete:hover { background: var(--sf-bg); color: var(--tx-error); }
+    .slot-editor__done {
+      background: var(--shine-teal);
+      color: var(--tx-inverse);
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .slot-editor__done:hover { background: var(--shine-dark-teal); }
 
     /* Per-day note input for gaps */
     .day-gap-note {
@@ -1116,7 +1191,7 @@
 <body>
 
 <!-- ════════════════════════════════════════════════════════════════════════ -->
-<!-- LINK GATE — shown when there is no usable personal link.                -->
+<!-- LINK GATE - shown when there is no usable personal link.                -->
 <!-- There is NO PIN and no other way in (owner, 2026-09-01). This screen     -->
 <!-- exists only to get the teacher a link, so it offers exactly one action.  -->
 <!-- ════════════════════════════════════════════════════════════════════════ -->
@@ -1255,7 +1330,7 @@ const IS_PREVIEW = API_BASE === "YOUR_API_BASE_HERE";
 
 let currentLang = "es";
 let selectedTeacher = "";
-let formToken = "";  // from ?t=TOKEN (the personal link) — the ONLY way in
+let formToken = "";  // from ?t=TOKEN (the personal link) - the ONLY way in
 
 // The school's own WhatsApp, for "send me my link". Same number the app uses.
 const SCHOOL_WHATSAPP = "34679572380";
@@ -1331,7 +1406,7 @@ function switchLanguage(lang) {
   document.documentElement.lang = lang;
 
   // Re-render schedule editor in the new language WITHOUT re-hydrating from
-  // the loaded data — if the user has painted unsaved changes, calling
+  // the loaded data - if the user has painted unsaved changes, calling
   // renderCurrentSchedule() with no args preserves them.
   if (editorState) {
     renderCurrentSchedule();
@@ -1457,7 +1532,7 @@ function showGate(state) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SCHEDULE EDITOR (Phase B — interactive paint-on-calendar)
+// SCHEDULE EDITOR (Phase B - interactive paint-on-calendar)
 //
 // One calendar that both shows the saved schedule AND lets you edit it.
 // Tap or drag on a day's bar to paint the active mode (green = general
@@ -1467,7 +1542,7 @@ function showGate(state) {
 // when that day has gaps.
 // ══════════════════════════════════════════════════════════════════════════
 
-// Schedule grid covers 08:00–22:00 (14 hours).
+// Schedule grid covers 08:00-22:00 (14 hours).
 const SCHEDULE_HOUR_START = 8;
 const SCHEDULE_HOUR_END = 22;
 const SCHEDULE_HOUR_SPAN = SCHEDULE_HOUR_END - SCHEDULE_HOUR_START;
@@ -1488,14 +1563,17 @@ const DAY_LABELS = {
 let currentScheduleToken = 0;
 // Raw loaded data from the server (general/urgent strings, holidays string)
 let currentScheduleData = null;
-// Mutable per-day editor state — { general: {day: [{start,end}]}, urgent: {day: [{start,end,note}]} }
+// Mutable per-day editor state - { general: {day: [{start,end}]}, urgent: {day: [{start,end,note}]} }
 let editorState = null;
 // Immutable snapshot of editorState at load time, for per-day no_change diff at submit
 let originalState = null;
 // Active paint mode
 let currentEditorMode = "general"; // "general" | "urgent"
-// Active drag session — null when not painting
+// Active drag session - null when not painting
 let dragSession = null;
+// Currently selected slot for the inline from/to editor - { day, mode, index } or null.
+// Survives renderCurrentSchedule() because render reads this module variable back.
+let editorSelection = null;
 
 // === Time helpers ===
 function timeStringToMinutes(t) {
@@ -1703,11 +1781,32 @@ function renderCurrentSchedule(data) {
     const hasAny = generalSlots.length > 0 || urgentSlots.length > 0;
 
     const segmentsHtml = [
-      ...generalSlots.map(s => buildSegmentHtml(s, "general", day)),
-      ...urgentSlots.map(s => buildSegmentHtml(s, "urgent", day)),
+      ...generalSlots.map((s, i) => buildSegmentHtml(s, "general", day,
+        !!(editorSelection && editorSelection.day === day && editorSelection.mode === "general" && editorSelection.index === i))),
+      ...urgentSlots.map((s, i) => buildSegmentHtml(s, "urgent", day,
+        !!(editorSelection && editorSelection.day === day && editorSelection.mode === "urgent" && editorSelection.index === i))),
     ].filter(Boolean).join("");
 
-    // Per-day note input — visible only when the day has gaps. All gap slots
+    // Inline from/to editor for the selected slot - shown directly below the
+    // bar, regardless of which mode (general/urgent) that slot belongs to.
+    let slotEditorHtml = "";
+    if (editorSelection && editorSelection.day === day) {
+      const selSlots = editorState[editorSelection.mode][day] || [];
+      const selSlot = selSlots[editorSelection.index];
+      if (selSlot) {
+        slotEditorHtml = `
+          <div class="slot-editor" data-day="${day}" data-mode="${editorSelection.mode}" data-index="${editorSelection.index}">
+            <span class="slot-editor__label">${currentLang === 'en' ? 'From' : 'Desde'}</span>
+            <input type="time" step="900" class="slot-editor__from" value="${selSlot.start}">
+            <span class="slot-editor__label">${currentLang === 'en' ? 'to' : 'hasta'}</span>
+            <input type="time" step="900" class="slot-editor__to" value="${selSlot.end}">
+            <button type="button" class="slot-editor__delete">${currentLang === 'en' ? 'Delete' : 'Borrar'}</button>
+            <button type="button" class="slot-editor__done">${currentLang === 'en' ? 'Done' : 'Listo'}</button>
+          </div>`;
+      }
+    }
+
+    // Per-day note input - visible only when the day has gaps. All gap slots
     // for that day share one note (rare to need different notes per gap).
     const dayNote = urgentSlots.length > 0 ? (urgentSlots[0].note || "") : "";
     const noteInputHtml = urgentSlots.length > 0
@@ -1716,20 +1815,26 @@ function renderCurrentSchedule(data) {
           value="${escapeAttr(dayNote)}">`
       : "";
 
-    // Clear-day button (current mode only) — visible when the day has slots in that mode
+    // Clear-day button (current mode only) - visible when the day has slots
+    // in that mode; when it has none, an add-slot button takes its place.
     const slotsInActiveMode = currentEditorMode === "general" ? generalSlots : urgentSlots;
-    const clearBtnHtml = slotsInActiveMode.length > 0
+    const dayActionBtnHtml = slotsInActiveMode.length > 0
       ? `<button type="button" class="day-clear-btn" data-day="${day}" title="${
           currentLang === 'en' ? 'Clear this day in current paint mode' : 'Borrar este día en el modo activo'
         }">${currentLang === 'en' ? 'Clear' : 'Borrar'}</button>`
-      : "";
+      : `<button type="button" class="day-add-btn" data-day="${day}">${
+          currentEditorMode === 'urgent'
+            ? (currentLang === 'en' ? '+ Add gap' : '+ Añadir hueco')
+            : (currentLang === 'en' ? '+ Add availability' : '+ Añadir disponibilidad')
+        }</button>`;
 
     return `
       <div class="current-schedule__day">
         <div class="current-schedule__day-label">${DAY_LABELS[day][currentLang]}</div>
         <div class="current-schedule__bar current-schedule__bar--editable" data-day="${day}">${segmentsHtml}</div>
+        ${slotEditorHtml}
         ${noteInputHtml}
-        ${clearBtnHtml}
+        ${dayActionBtnHtml}
       </div>
     `;
   }).join("");
@@ -1769,14 +1874,14 @@ function renderCurrentSchedule(data) {
       currentLang === 'en'
         ? `There are <strong>two things</strong> you can set on the calendar below:
            <ul class="current-schedule__legend-list">
-             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>General availability</strong> — your regular working hours at Shine, when you’re available to teach.</li>
-             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Gaps</strong> — a specific time slot that needs filling right now, e.g. a student just left and you’d like a new one to take their slot.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>General availability</strong> - your regular working hours at Shine, when you’re available to teach.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Gaps</strong> - a specific time slot that needs filling right now, e.g. a student just left and you’d like a new one to take their slot.</li>
            </ul>
            Pick which one you want to paint using the <strong>Available</strong> / <strong>Gap</strong> buttons above the calendar, then tap or drag on a day’s bar to paint. Days you don’t touch keep their saved values.`
         : `Hay <strong>dos cosas</strong> que puedes ajustar en el calendario:
            <ul class="current-schedule__legend-list">
-             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>Disponibilidad general</strong> — tu horario habitual de trabajo en Shine, cuando estás disponible para dar clases.</li>
-             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Huecos</strong> — un hueco concreto que necesita llenarse ahora, p. ej. un alumno acaba de irse y te gustaría que asignen otro a ese hueco.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--general"></span><strong>Disponibilidad general</strong> - tu horario habitual de trabajo en Shine, cuando estás disponible para dar clases.</li>
+             <li><span class="current-schedule__swatch current-schedule__swatch--urgent"></span><strong>Huecos</strong> - un hueco concreto que necesita llenarse ahora, p. ej. un alumno acaba de irse y te gustaría que asignen otro a ese hueco.</li>
            </ul>
            Elige cuál quieres pintar con los botones <strong>Disponible</strong> / <strong>Hueco</strong> encima del calendario, y luego toca o arrastra sobre la barra de un día para pintar. Los días que no toques conservan los valores guardados.`
     }</div>
@@ -1789,16 +1894,17 @@ function renderCurrentSchedule(data) {
   attachEditorHandlers(el);
 }
 
-function buildSegmentHtml(slot, kind, day) {
+function buildSegmentHtml(slot, kind, day, isSelected) {
   const startFrac = timeStringToFraction(slot.start);
   const endFrac = timeStringToFraction(slot.end);
   if (startFrac === null || endFrac === null) return "";
   const left = Math.min(startFrac, endFrac) * 100;
   const width = Math.max(0, Math.abs(endFrac - startFrac) * 100);
   if (width <= 0) return "";
-  const title = `${slot.start}–${slot.end}${slot.note ? " (" + slot.note + ")" : ""}`;
+  const title = `${slot.start}-${slot.end}${slot.note ? " (" + slot.note + ")" : ""}`;
   const dayAttr = day ? ` data-day="${day}"` : "";
-  return `<div class="current-schedule__segment current-schedule__segment--${kind}"${dayAttr} data-kind="${kind}" data-start="${slot.start}" data-end="${slot.end}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${escapeAttr(title)}"></div>`;
+  const selectedClass = isSelected ? " current-schedule__segment--selected" : "";
+  return `<div class="current-schedule__segment current-schedule__segment--${kind}${selectedClass}"${dayAttr} data-kind="${kind}" data-start="${slot.start}" data-end="${slot.end}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${escapeAttr(title)}"></div>`;
 }
 
 // === Event wiring ===
@@ -1809,8 +1915,32 @@ function attachEditorHandlers(rootEl) {
   rootEl.querySelectorAll(".day-clear-btn").forEach(btn => {
     btn.addEventListener("click", () => clearDayInMode(btn.dataset.day, currentEditorMode));
   });
+  rootEl.querySelectorAll(".day-add-btn").forEach(btn => {
+    btn.addEventListener("click", () => addDefaultSlot(btn.dataset.day));
+  });
   rootEl.querySelectorAll(".day-gap-note").forEach(inp => {
     inp.addEventListener("input", () => setDayGapNote(inp.dataset.day, inp.value));
+  });
+  rootEl.querySelectorAll(".slot-editor__from, .slot-editor__to").forEach(inp => {
+    inp.addEventListener("change", () => handleSlotEditorChange(inp.closest(".slot-editor")));
+  });
+  rootEl.querySelectorAll(".slot-editor__delete").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const rowEl = btn.closest(".slot-editor");
+      if (!rowEl || !editorState) return;
+      const day = rowEl.dataset.day;
+      const mode = rowEl.dataset.mode;
+      const index = parseInt(rowEl.dataset.index, 10);
+      if (Array.isArray(editorState[mode][day])) editorState[mode][day].splice(index, 1);
+      editorSelection = null;
+      renderCurrentSchedule();
+    });
+  });
+  rootEl.querySelectorAll(".slot-editor__done").forEach(btn => {
+    btn.addEventListener("click", () => {
+      editorSelection = null;
+      renderCurrentSchedule();
+    });
   });
   rootEl.querySelectorAll(".current-schedule__bar--editable").forEach(bar => {
     bar.addEventListener("mousedown", onPaintStart);
@@ -1845,8 +1975,8 @@ function onPaintStart(e) {
   const previewEl = document.createElement("div");
   previewEl.className = `current-schedule__preview current-schedule__preview--${currentEditorMode}`;
   barEl.appendChild(previewEl);
-  // Floating "HH:MM – HH:MM" tooltip so the teacher can see exactly which
-  // minutes they're painting while dragging — eliminates the "is this 16:30
+  // Floating "HH:MM - HH:MM" tooltip so the teacher can see exactly which
+  // minutes they're painting while dragging - eliminates the "is this 16:30
   // or 16:45?" guesswork the eye can't resolve at the bar's resolution.
   const labelEl = document.createElement("div");
   labelEl.className = "current-schedule__preview-label";
@@ -1905,8 +2035,18 @@ function updatePreview() {
     dragSession.labelEl.style.left = midPercent.toFixed(2) + "%";
     dragSession.labelEl.textContent = (lo === hi)
       ? minutesToTimeString(lo)
-      : minutesToTimeString(lo) + " – " + minutesToTimeString(hi);
+      : minutesToTimeString(lo) + " - " + minutesToTimeString(hi);
   }
+}
+
+// Finds the index of the slot in `slots` that contains atMin (start <= atMin < end).
+// Returns -1 if none does.
+function findSlotIndexContaining(slots, atMin) {
+  return slots.findIndex(s => {
+    const a = timeStringToMinutes(s.start);
+    const b = timeStringToMinutes(s.end);
+    return a <= atMin && atMin < b;
+  });
 }
 
 // === Mutations on editorState ===
@@ -1915,12 +2055,17 @@ function handleTap(day, mode, atMin) {
   const slots = editorState[mode][day];
   const hit = findHitSlot(slots, atMin);
   if (hit) {
-    editorState[mode][day] = slots.filter(s => s !== hit);
+    // Select the existing slot instead of deleting it, so it can be
+    // fine-tuned in the inline from/to editor.
+    editorSelection = { day, mode, index: slots.indexOf(hit) };
   } else {
-    // Default to a 30-minute slot at the tapped point
+    // Default to a 30-minute slot at the tapped point, then select it.
     const newEnd = clampToBar(atMin + 30);
     const note = mode === "urgent" ? (slots.length > 0 ? (slots[0].note || "") : "") : undefined;
-    editorState[mode][day] = addSlotToDay(slots, atMin, newEnd, note);
+    const updated = addSlotToDay(slots, atMin, newEnd, note);
+    editorState[mode][day] = updated;
+    const newIndex = findSlotIndexContaining(updated, atMin);
+    editorSelection = newIndex >= 0 ? { day, mode, index: newIndex } : null;
   }
 }
 
@@ -1928,13 +2073,73 @@ function handlePaint(day, mode, startMin, endMin) {
   if (!editorState) return;
   const slots = editorState[mode][day];
   // If the painted range is fully inside existing same-mode coverage, treat as
-  // "subtract" — drag-clearing a section. Otherwise, add the new range.
+  // "subtract" - drag-clearing a section. Otherwise, add the new range.
   if (isRangeCovered(slots, startMin, endMin)) {
     editorState[mode][day] = subtractRange(slots, startMin, endMin);
+    editorSelection = null;
   } else {
     const note = mode === "urgent" ? (slots.length > 0 ? (slots[0].note || "") : "") : undefined;
-    editorState[mode][day] = addSlotToDay(slots, startMin, endMin, note);
+    const updated = addSlotToDay(slots, startMin, endMin, note);
+    editorState[mode][day] = updated;
+    const newIndex = findSlotIndexContaining(updated, startMin);
+    editorSelection = newIndex >= 0 ? { day, mode, index: newIndex } : null;
   }
+}
+
+// Adds a default 18:00-19:00 slot (clamped to the bar) to the active mode for
+// a day with no slots yet in that mode, then selects it.
+function addDefaultSlot(day) {
+  if (!editorState) return;
+  const mode = currentEditorMode;
+  let startMin = clampToBar(18 * 60);
+  let endMin = clampToBar(19 * 60);
+  if (endMin <= startMin) {
+    startMin = clampToBar(SCHEDULE_HOUR_START * 60);
+    endMin = clampToBar(SCHEDULE_HOUR_START * 60 + 60);
+  }
+  const slots = editorState[mode][day];
+  const note = mode === "urgent" ? (slots.length > 0 ? (slots[0].note || "") : "") : undefined;
+  const updated = addSlotToDay(slots, startMin, endMin, note);
+  editorState[mode][day] = updated;
+  const newIndex = findSlotIndexContaining(updated, startMin);
+  editorSelection = newIndex >= 0 ? { day, mode, index: newIndex } : null;
+  renderCurrentSchedule();
+}
+
+// Applies an edit made in the inline from/to editor: reads both time inputs
+// off the given .slot-editor row, snaps/clamps them, then replaces the slot
+// at that row's index with the new range (merging with any overlaps exactly
+// as painting does).
+function handleSlotEditorChange(rowEl) {
+  if (!rowEl || !editorState) return;
+  const day = rowEl.dataset.day;
+  const mode = rowEl.dataset.mode;
+  const index = parseInt(rowEl.dataset.index, 10);
+  const slots = editorState[mode][day];
+  const slot = slots && slots[index];
+  if (!slot) return;
+
+  const fromInput = rowEl.querySelector(".slot-editor__from");
+  const toInput = rowEl.querySelector(".slot-editor__to");
+  const rawFrom = timeStringToMinutes(fromInput.value);
+  const rawTo = timeStringToMinutes(toInput.value);
+  if (rawFrom === null || rawTo === null) return;
+
+  let fromMin = clampToBar(snapMinutes(rawFrom));
+  let toMin = clampToBar(snapMinutes(rawTo));
+  if (fromMin >= toMin) {
+    toMin = clampToBar(fromMin + SLOT_GRANULARITY_MIN);
+    if (toMin <= fromMin) return;
+  }
+
+  const note = slot.note;
+  const remaining = slots.slice();
+  remaining.splice(index, 1);
+  const updated = addSlotToDay(remaining, fromMin, toMin, note);
+  editorState[mode][day] = updated;
+  const newIndex = findSlotIndexContaining(updated, fromMin);
+  editorSelection = newIndex >= 0 ? { day, mode, index: newIndex } : null;
+  renderCurrentSchedule();
 }
 
 function clearDayInMode(day, mode) {
@@ -1948,7 +2153,7 @@ function setDayGapNote(day, note) {
   const trimmed = (note || "").trim();
   // All gap slots for this day share the same note
   editorState.urgent[day] = editorState.urgent[day].map(s => ({ ...s, note: trimmed }));
-  // No re-render — we'd unfocus the input; the data is captured for submit
+  // No re-render - we'd unfocus the input; the data is captured for submit
 }
 
 // The demo grid used by preview mode (no backend). Lifted out of the deleted
@@ -2340,7 +2545,7 @@ function collectData() {
     return null;
   }
   if (!editorState || !originalState) {
-    // Teacher selected but data hasn't loaded — abort gracefully
+    // Teacher selected but data hasn't loaded - abort gracefully
     return null;
   }
 
@@ -2367,7 +2572,7 @@ function collectData() {
     }
   });
 
-  // Holidays — unchanged from v1
+  // Holidays - unchanged from v1
   const holidays = [];
   document.querySelectorAll(".holiday-entry").forEach(entry => {
     const dates = entry.querySelectorAll("input[type='date']");
@@ -2419,7 +2624,7 @@ async function submitForm() {
 
   // Preview mode: simulate success
   if (IS_PREVIEW) {
-    console.log("Preview mode — form data:", JSON.stringify(data, null, 2));
+    console.log("Preview mode - form data:", JSON.stringify(data, null, 2));
     await new Promise(r => setTimeout(r, 800)); // simulate network delay
     showFeedback("success", new Date().toLocaleString());
     btn.disabled = false;
