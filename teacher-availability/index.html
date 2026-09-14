@@ -462,6 +462,44 @@
     }
     .combos-empty { color: #64748b; font-size: 14px; padding: 10px 0; }
 
+    /* ── Proponer un alumno (2026-09-14) ──────────────────────────────── */
+    .suggest-section { margin-top: 24px; }
+    .suggest-grid {
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+    .suggest-field {
+      display: flex; flex-direction: column; gap: 4px;
+      flex: 1 1 200px; min-width: 160px;
+    }
+    .suggest-field--wide { flex-basis: 100%; }
+    .suggest-label {
+      font-size: 13px; font-weight: 600; color: #475569;
+    }
+    .suggest-input {
+      width: 100%; box-sizing: border-box; font-family: inherit; font-size: 14px;
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      background: #fff; color: var(--tx-primary);
+    }
+    .suggest-input:focus { outline: 2px solid var(--shine-light-teal); outline-offset: 1px; }
+    textarea.suggest-input { resize: vertical; }
+    .suggest-radios { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 6px; }
+    .suggest-radio {
+      display: flex; align-items: center; gap: 6px; font-size: 14px;
+      color: var(--tx-primary); cursor: pointer;
+    }
+    #suggest-submit-btn { margin-top: 16px; }
+    /* Required marker + the outline a missing or rejected field gets. */
+    .suggest-req { color: #b91c1c; font-weight: 700; }
+    .suggest-input.is-invalid,
+    .suggest-radios.is-invalid {
+      border: 1px solid #dc2626; border-radius: 8px;
+      outline: 2px solid #fca5a5; outline-offset: 1px;
+    }
+    .suggest-radios.is-invalid { padding: 6px 8px; }
+    .suggest-error {
+      margin-top: 12px; font-size: 13px; font-weight: 600; color: #b91c1c;
+    }
+
     /* ── Current Schedule Preview (Phase A read-only calendar) ── */
     .current-schedule {
       background: var(--sf-card);
@@ -1242,15 +1280,17 @@
          name is shown in the banner rendered by showTeacherBanner(). -->
 
 
-    <!-- Tabs. The combos one only exists for a teacher who leads combos, so
-         everybody else sees the form exactly as before (owner 2026-09-10). -->
-    <div class="sf-tabs" id="sf-tabs" hidden>
+    <!-- Tabs. Shown to EVERY teacher whose link works (owner 2026-09-14): the
+         combos tab is also where she proposes a student, which is worth
+         offering to a teacher who leads nothing yet. Availability stays the
+         tab that opens. -->
+    <div class="sf-tabs hidden" id="sf-tabs">
       <button type="button" class="sf-tab is-active" id="tab-availability"
               onclick="showTab('availability')"
               data-en="Availability" data-es="Disponibilidad">Disponibilidad</button>
       <button type="button" class="sf-tab" id="tab-combos"
               onclick="showTab('combos')"
-              data-en="My combos" data-es="Mis combos">Mis combos</button>
+              data-en="Combos" data-es="Combos">Combos</button>
     </div>
 
     <div id="pane-availability">
@@ -1291,14 +1331,144 @@
           <span data-en="Your combos and group classes"
                 data-es="Tus combos y clases grupales">Tus combos y clases grupales</span>
         </div>
-        <div class="sf-description"
+        <div class="sf-description" id="combos-description"
              data-en="This is what the school has on file right now. Fix it: take out anyone who is not coming, add anyone new by typing their name, set what each person plays, and adjust the day and time. Then save."
              data-es="Esto es lo que la escuela tiene ahora mismo. Corr&iacute;gelo: quita a quien no viene, a&ntilde;ade a los nuevos escribiendo su nombre, indica qu&eacute; toca cada uno y ajusta el d&iacute;a y la hora. Luego guarda.">Esto es lo que la escuela tiene ahora mismo. Corr&iacute;gelo: quita a quien no viene, a&ntilde;ade a los nuevos escribiendo su nombre, indica qu&eacute; toca cada uno y ajusta el d&iacute;a y la hora. Luego guarda.</div>
+        <!-- A teacher who leads nothing yet still gets this tab, and this line
+             instead of an empty box (owner 2026-09-14). -->
+        <div class="combos-empty hidden" id="combos-empty"
+             data-en="You do not have any combos or group classes assigned yet."
+             data-es="Todav&iacute;a no tienes combos ni clases grupales asignados.">Todav&iacute;a no tienes combos ni clases grupales asignados.</div>
         <div id="combos-list" class="combos-list"></div>
       </div>
       <button class="sf-submit" id="combos-submit-btn" onclick="submitCombos()">
         <span data-en="Save combos" data-es="Guardar combos">Guardar combos</span>
       </button>
+
+      <!-- ── PROPONER UN ALUMNO ──────────────────────────────────────────
+           The teacher knows who is ready for a combo long before the office
+           does. She describes the person; the office finds the combo. She is
+           never asked to place anybody, and the combo box below is a hint. -->
+      <div class="sf-section suggest-section">
+        <div class="sf-section__title">
+          <span data-en="Suggest a student for a combo"
+                data-es="Proponer un alumno para un combo">Proponer un alumno para un combo</span>
+        </div>
+        <div class="sf-description"
+             data-en="The office will look for the right combo or group and let you both know."
+             data-es="La oficina buscar&aacute; el combo o grupo adecuado y os avisar&aacute;.">La oficina buscar&aacute; el combo o grupo adecuado y os avisar&aacute;.</div>
+
+        <div class="suggest-grid">
+          <div class="suggest-field">
+            <span class="suggest-label"
+                  data-en="Name <span class='suggest-req'>*</span>"
+                  data-es="Nombre <span class='suggest-req'>*</span>">Nombre <span class="suggest-req">*</span></span>
+            <input type="text" id="suggest-name" class="suggest-input" maxlength="120"
+                   data-placeholder-en="First and last name"
+                   data-placeholder-es="Nombre y apellido" placeholder="Nombre y apellido">
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label"
+                  data-en="Instrument <span class='suggest-req'>*</span>"
+                  data-es="Instrumento <span class='suggest-req'>*</span>">Instrumento <span class="suggest-req">*</span></span>
+            <select id="suggest-instrument" class="suggest-input">
+              <option value="" data-en="Choose one" data-es="Elige uno">Elige uno</option>
+              <option value="drums" data-en="Drums" data-es="Bater&iacute;a">Bater&iacute;a</option>
+              <option value="bass" data-en="Bass" data-es="Bajo">Bajo</option>
+              <option value="guitar" data-en="Guitar" data-es="Guitarra">Guitarra</option>
+              <option value="vocals" data-en="Vocals" data-es="Voz">Voz</option>
+              <option value="piano" data-en="Piano" data-es="Piano">Piano</option>
+              <option value="sax" data-en="Sax" data-es="Saxo">Saxo</option>
+              <option value="trumpet" data-en="Trumpet" data-es="Trompeta">Trompeta</option>
+              <option value="trombone" data-en="Trombone" data-es="Tromb&oacute;n">Tromb&oacute;n</option>
+              <option value="violin" data-en="Violin" data-es="Viol&iacute;n">Viol&iacute;n</option>
+              <option value="ukulele" data-en="Ukulele" data-es="Ukelele">Ukelele</option>
+              <option value="cello" data-en="Cello" data-es="Violonchelo">Violonchelo</option>
+              <option value="other" data-en="Other" data-es="Otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label"
+                  data-en="Adult or minor <span class='suggest-req'>*</span>"
+                  data-es="Adulto o menor <span class='suggest-req'>*</span>">Adulto o menor <span class="suggest-req">*</span></span>
+            <div class="suggest-radios" id="suggest-age-radios">
+              <label class="suggest-radio">
+                <input type="radio" name="suggest-age-group" value="adult">
+                <span data-en="Adult" data-es="Adulto">Adulto</span>
+              </label>
+              <label class="suggest-radio">
+                <input type="radio" name="suggest-age-group" value="minor">
+                <span data-en="Under 18" data-es="Menor de edad">Menor de edad</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Approximate age"
+                  data-es="Edad aproximada">Edad aproximada</span>
+            <input type="number" id="suggest-approx-age" class="suggest-input"
+                   min="3" max="99" inputmode="numeric">
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Phone" data-es="Tel&eacute;fono">Tel&eacute;fono</span>
+            <input type="tel" id="suggest-phone" class="suggest-input" maxlength="20">
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Email" data-es="Correo">Correo</span>
+            <input type="email" id="suggest-email" class="suggest-input" maxlength="200">
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Combo" data-es="Combo">Combo</span>
+            <select id="suggest-group" class="suggest-input"></select>
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Level" data-es="Nivel">Nivel</span>
+            <select id="suggest-level" class="suggest-input">
+              <option value="" data-en="Not specified" data-es="Sin indicar">Sin indicar</option>
+              <option value="beginner" data-en="Beginner" data-es="Principiante">Principiante</option>
+              <option value="intermediate" data-en="Intermediate" data-es="Intermedio">Intermedio</option>
+              <option value="advanced" data-en="Advanced" data-es="Avanzado">Avanzado</option>
+            </select>
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Style" data-es="Estilo">Estilo</span>
+            <input type="text" id="suggest-style" class="suggest-input" maxlength="120"
+                   data-placeholder-en="Rock, jazz, pop..."
+                   data-placeholder-es="Rock, jazz, pop..." placeholder="Rock, jazz, pop...">
+          </div>
+
+          <div class="suggest-field">
+            <span class="suggest-label" data-en="Availability"
+                  data-es="Disponibilidad">Disponibilidad</span>
+            <input type="text" id="suggest-availability" class="suggest-input" maxlength="200"
+                   data-placeholder-en="Weekday afternoons..."
+                   data-placeholder-es="Tardes entre semana..." placeholder="Tardes entre semana...">
+          </div>
+
+          <div class="suggest-field suggest-field--wide">
+            <span class="suggest-label" data-en="Comments" data-es="Comentarios">Comentarios</span>
+            <textarea id="suggest-comments" class="suggest-input" rows="3" maxlength="1000"></textarea>
+          </div>
+        </div>
+
+        <!-- What went wrong, in one line. Generic by default; the server's
+             own field codes can replace the text, and both languages are
+             written into the data attributes so the toggle keeps working. -->
+        <div class="suggest-error hidden" id="suggest-error" aria-live="polite"
+             data-en="Check the marked fields"
+             data-es="Revisa los campos marcados">Revisa los campos marcados</div>
+
+        <button class="sf-submit" id="suggest-submit-btn" onclick="submitSuggestion()">
+          <span data-en="Send suggestion" data-es="Enviar propuesta">Enviar propuesta</span>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -2396,19 +2566,34 @@ function showTab(which) {
 }
 
 async function loadCombos() {
+  // Shared device: the previous teacher's combos and her tab bar must not
+  // survive a reload that fails halfway (owner 2026-09-14). Wipe both BEFORE
+  // the fetch, so a failure leaves nothing of hers on screen.
+  combosData = [];
+  document.getElementById("sf-tabs").classList.add("hidden");
+
+  let data;
   try {
     const resp = await fetch(API_BASE + "/combos?t=" + encodeURIComponent(formToken));
-    const data = await resp.json();
-    // No combos is the normal case for most teachers: leave the tab hidden and
-    // the form is exactly what it always was.
-    if (!data || data.error || !Array.isArray(data.combos) || !data.combos.length) return;
-    combosData = data.combos;
-    document.getElementById("sf-tabs").hidden = false;
-    renderCombos();
-    switchLanguage(currentLang);
+    data = await resp.json();
   } catch (e) {
-    // A combos fetch that fails must never cost her the availability form.
+    // A combos fetch that fails must never cost her the availability form:
+    // the tabs stay away and the form is exactly what it always was.
+    return;
   }
+  if (!data || data.error || !Array.isArray(data.combos)) return;
+
+  // Leading no combos is normal, and the tab still opens: it is also where a
+  // teacher proposes a student (owner 2026-09-14).
+  combosData = data.combos;
+  const empty = combosData.length === 0;
+  document.getElementById("sf-tabs").classList.remove("hidden");
+  document.getElementById("combos-empty").classList.toggle("hidden", !empty);
+  document.getElementById("combos-description").classList.toggle("hidden", empty);
+  document.getElementById("combos-submit-btn").classList.toggle("hidden", empty);
+  renderCombos();
+  renderSuggestCombos();
+  switchLanguage(currentLang);
 }
 
 function renderCombos() {
@@ -2585,6 +2770,255 @@ async function submitCombos() {
   }
 }
 
+// ── PROPONER UN ALUMNO ─────────────────────────────────────────────────────
+// Owner 2026-09-14: a teacher knows who is ready for a combo long before the
+// office does. She describes the person and sends it; the office decides where
+// that person goes. The combo box is a hint, and only her own combos are in it
+// (the server checks that again, and ignores anything else in silence).
+
+// The teacher's own combos, plus "no preference" at the top. Rebuilt whenever
+// the combos list is reloaded, so a combo she just renamed reads right here.
+function renderSuggestCombos() {
+  const sel = document.getElementById("suggest-group");
+  if (!sel) return;
+  const previous = sel.value;
+  sel.textContent = "";
+
+  const none = document.createElement("option");
+  none.value = "";
+  none.dataset.en = "No preference";
+  none.dataset.es = "Sin preferencia";
+  none.textContent = currentLang === "en" ? "No preference" : "Sin preferencia";
+  sel.appendChild(none);
+
+  combosData.forEach((combo) => {
+    const opt = document.createElement("option");
+    opt.value = String(combo.id);
+    // A combo's name is not translated: it is what the school calls it.
+    opt.textContent = combo.name || "";
+    sel.appendChild(opt);
+  });
+  sel.value = previous;
+}
+
+function suggestValue(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value || "").trim() : "";
+}
+
+// The server names the field, this says which control the teacher has to
+// look at. Every field the endpoint can reject is in here, so a 422 always
+// lands on something visible instead of on the generic retry message.
+const SUGGEST_FIELD_IDS = {
+  name: "suggest-name",
+  instrument: "suggest-instrument",
+  age_group: "suggest-age-radios",
+  approx_age: "suggest-approx-age",
+  phone: "suggest-phone",
+  email: "suggest-email",
+  group_id: "suggest-group",
+  level: "suggest-level",
+  style: "suggest-style",
+  availability: "suggest-availability",
+  comments: "suggest-comments",
+};
+
+function markSuggestInvalid(field) {
+  const id = SUGGEST_FIELD_IDS[field];
+  const el = id ? document.getElementById(id) : null;
+  if (el) el.classList.add("is-invalid");
+  return el;
+}
+
+function focusSuggest(el) {
+  if (!el) return;
+  // The age group is a div, so focus the first radio inside it.
+  const target = el.id === "suggest-age-radios"
+    ? el.querySelector("input[type='radio']")
+    : el;
+  if (target && typeof target.focus === "function") target.focus();
+}
+
+function clearSuggestErrors() {
+  document.querySelectorAll(".suggest-section .is-invalid").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+  const box = document.getElementById("suggest-error");
+  if (box) box.classList.add("hidden");
+}
+
+// Both languages go in, always, so the toggle still reads right afterwards.
+function showSuggestError(textEs, textEn) {
+  const box = document.getElementById("suggest-error");
+  if (!box) return;
+  box.setAttribute("data-es", textEs);
+  box.setAttribute("data-en", textEn);
+  box.classList.remove("hidden");
+  switchLanguage(currentLang);
+}
+
+// A field the teacher is fixing stops looking wrong the moment she types.
+function clearSuggestFieldError(el) {
+  if (el) el.classList.remove("is-invalid");
+  const box = document.getElementById("suggest-error");
+  if (box && !document.querySelector(".suggest-section .is-invalid")) {
+    box.classList.add("hidden");
+  }
+}
+
+function wireSuggestValidation() {
+  Object.keys(SUGGEST_FIELD_IDS).forEach((field) => {
+    if (field === "age_group") return;  // radios are wired below
+    const el = document.getElementById(SUGGEST_FIELD_IDS[field]);
+    if (!el) return;
+    const clear = () => clearSuggestFieldError(el);
+    el.addEventListener("input", clear);
+    el.addEventListener("change", clear);
+  });
+  document.querySelectorAll("input[name='suggest-age-group']").forEach((radio) => {
+    radio.addEventListener("change", () => {
+      clearSuggestFieldError(document.getElementById("suggest-age-radios"));
+    });
+  });
+}
+
+// Name, instrument and adult/minor are required server-side. Catching them
+// here means the teacher never spends a round trip to be told so.
+function missingSuggestFields() {
+  const missing = [];
+  if (suggestValue("suggest-name").length < 2) missing.push("name");
+  if (!suggestValue("suggest-instrument")) missing.push("instrument");
+  if (!document.querySelector("input[name='suggest-age-group']:checked")) {
+    missing.push("age_group");
+  }
+  return missing;
+}
+
+// The 422 body is {detail: {error, fields: {<field>: <code>}}}. Outline each
+// field the server named, and say the specific thing for the two codes a
+// teacher can actually act on.
+function renderSuggestFieldErrors(fields) {
+  const partsEs = ["Revisa los campos marcados"];
+  const partsEn = ["Check the marked fields"];
+  let first = null;
+  Object.keys(fields).forEach((field) => {
+    const el = markSuggestInvalid(field);
+    if (!first) first = el;
+    const code = fields[field];
+    if (code === "invalid_email") {
+      partsEs.push("Email no v\u00e1lido");
+      partsEn.push("Invalid email");
+    } else if (code === "invalid_phone") {
+      partsEs.push("Tel\u00e9fono no v\u00e1lido");
+      partsEn.push("Invalid phone");
+    }
+  });
+  showSuggestError(partsEs.join(". "), partsEn.join(". "));
+  focusSuggest(first);
+}
+
+function collectSuggestion() {
+  const age = document.querySelector("input[name='suggest-age-group']:checked");
+  return {
+    token: formToken,
+    name: suggestValue("suggest-name"),
+    instrument: suggestValue("suggest-instrument"),
+    age_group: age ? age.value : "",
+    approx_age: suggestValue("suggest-approx-age"),
+    phone: suggestValue("suggest-phone"),
+    email: suggestValue("suggest-email"),
+    group_id: suggestValue("suggest-group"),
+    level: suggestValue("suggest-level"),
+    style: suggestValue("suggest-style"),
+    availability: suggestValue("suggest-availability"),
+    comments: suggestValue("suggest-comments"),
+  };
+}
+
+function clearSuggestion() {
+  [
+    "suggest-name", "suggest-instrument", "suggest-approx-age", "suggest-phone",
+    "suggest-email", "suggest-group", "suggest-level", "suggest-style",
+    "suggest-availability", "suggest-comments",
+  ].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.querySelectorAll("input[name='suggest-age-group']").forEach((radio) => {
+    radio.checked = false;
+  });
+  clearSuggestErrors();
+}
+
+function setSuggestButtonText(text) {
+  const span = document.querySelector("#suggest-submit-btn span");
+  if (span) span.textContent = text;
+}
+
+async function submitSuggestion() {
+  const btn = document.getElementById("suggest-submit-btn");
+
+  // Nothing leaves the phone until the three required answers are there.
+  clearSuggestErrors();
+  const missing = missingSuggestFields();
+  if (missing.length) {
+    let first = null;
+    missing.forEach((field) => {
+      const el = markSuggestInvalid(field);
+      if (!first) first = el;
+    });
+    focusSuggest(first);
+    setSuggestButtonText(currentLang === "en"
+      ? "Missing: name, instrument or age"
+      : "Faltan datos: nombre, instrumento o edad");
+    // switchLanguage puts the button's own two-language label back.
+    setTimeout(() => { switchLanguage(currentLang); }, 2000);
+    return;
+  }
+
+  btn.disabled = true;
+  setSuggestButtonText(currentLang === "en" ? "Sending..." : "Enviando...");
+  try {
+    const resp = await fetch(API_BASE + "/suggest-student", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(collectSuggestion()),
+    });
+    let data = null;
+    try {
+      data = await resp.json();
+    } catch (parseError) {
+      data = null;  // a 5xx can answer HTML; that is the generic retry below
+    }
+
+    // A rejected field is not a dead end: the server said which one, so say it
+    // instead of asking her to try the same thing again (owner 2026-09-14).
+    if (resp.status === 422 && data && data.detail && data.detail.fields) {
+      renderSuggestFieldErrors(data.detail.fields);
+      switchLanguage(currentLang);   // the button's own label comes back
+      btn.disabled = false;
+      return;
+    }
+
+    // Everything else that is not a plain ok: network trouble or a 5xx, and
+    // trying again really is the only thing she can do.
+    if (!resp.ok || !data || data.error || data.status !== "ok") {
+      throw new Error("not ok");
+    }
+
+    clearSuggestion();
+    setSuggestButtonText(currentLang === "en" ? "Suggestion sent" : "Propuesta enviada");
+    setTimeout(() => {
+      switchLanguage(currentLang);
+      btn.disabled = false;
+    }, 2000);
+  } catch (e) {
+    setSuggestButtonText(currentLang === "en"
+      ? "Could not send, try again" : "No se pudo enviar, int\u00e9ntalo otra vez");
+    btn.disabled = false;
+  }
+}
+
 // Show whose availability this is. There is no picker any more, so this banner
 // is the only thing telling the teacher the link opened as the right person.
 function showTeacherBanner(name) {
@@ -2610,6 +3044,11 @@ function showTeacherBanner(name) {
     localStorage.removeItem("shine-avail-token");
     formToken = "";
     selectedTeacher = "";
+    // Shared device: her combos, her tab bar and the combos pane all go,
+    // so the next person starts on availability with nothing of hers.
+    combosData = [];
+    document.getElementById("sf-tabs").classList.add("hidden");
+    showTab("availability");
     showGate("missing");
   });
   banner.appendChild(title);
@@ -2791,6 +3230,9 @@ function showFeedback(type, detail) {
   const savedLang = localStorage.getItem("shine-avail-lang");
   if (savedLang === "en" || savedLang === "es") currentLang = savedLang;
   switchLanguage(currentLang);
+
+  // An outlined field stops looking wrong as soon as she edits it.
+  wireSuggestValidation();
 
   // Preview mode: no backend, so fake a resolved link and show the demo grid.
   if (IS_PREVIEW) {
